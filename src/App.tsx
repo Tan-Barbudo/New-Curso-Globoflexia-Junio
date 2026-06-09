@@ -173,6 +173,12 @@ export default function App() {
     }
   });
 
+  // 8. Handle real-time modules editing
+  const handleUpdateModules = (updatedModules: LessonModule[]) => {
+    setModules(updatedModules);
+    localStorage.setItem('tb_modules_list', JSON.stringify(updatedModules));
+  };
+
   return (
     <div id="app-viewport-root">
       {currentUser ? (
@@ -187,6 +193,7 @@ export default function App() {
           onAddComment={handleAddComment}
           onAddReply={handleAddReply}
           onToggleCommentLike={handleToggleCommentLike}
+          onUpdateModules={handleUpdateModules}
         />
       ) : (
         <Login onLoginSuccess={handleLogin} />

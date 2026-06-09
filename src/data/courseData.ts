@@ -540,7 +540,7 @@ export const INITIAL_COMMENTS: ForumComment[] = [
   {
     id: 'c-1',
     authorName: 'Profe Gustavo',
-    authorAvatar: 'https://api.dicebear.com/7.x/adventurer/svg?seed=gustavo',
+    authorAvatar: '/input_file_1.png',
     authorRole: 'Profesor',
     date: 'Hace 2 horas',
     content: '¡Bienvenidos a todos al curso estrella de Globoflexia Tan Barbudo! Estoy súper emocionado de ver sus primeras esculturas. Recuerden iniciar con calma, estirar el globo antes de inflar y, sobre todo, ponerle una sonrisa enorme. ¡El error es solo parte de la diversión!',
@@ -570,7 +570,7 @@ export const INITIAL_COMMENTS: ForumComment[] = [
       {
         id: 'r-2-1',
         authorName: 'Profe Gustavo',
-        authorAvatar: 'https://api.dicebear.com/7.x/adventurer/svg?seed=gustavo',
+        authorAvatar: '/input_file_1.png',
         authorRole: 'Profesor',
         date: 'Hace 18 horas',
         content: '¡Excelente pregunta Maria Paz! El secreto es "relajar el látex" un poco antes del nudo desinflando un suspiro de aire (burping). Además, debes rodear tus dedos índice y medio juntos sin apretar, dejando espacio para deslizar la boquilla con el pulgar. En el módulo 3 muestro esa postura de dedos exacta.'

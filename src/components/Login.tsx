@@ -56,31 +56,32 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           className="bg-white border-4 border-brand-dark rounded-3xl p-6 md:p-8 sticker-shadow-lg relative overflow-hidden"
         >
           {/* Brand header simulation */}
-          <div className="text-center mb-8">
-            <div className="inline-block relative">
-              {/* Outer Fun Sticker Frame */}
-              <div className="bg-brand-dark text-white text-3xl md:text-4xl font-display font-bold px-6 py-3 rounded-2xl transform -rotate-2 border-2 border-brand-yellow sticker-shadow inline-block tracking-tight">
-                <span className="text-brand-red">T</span>
-                <span className="text-brand-yellow">A</span>
-                <span className="text-brand-green">N</span>
-                <span className="text-white"> </span>
-                <span className="text-brand-blue">B</span>
-                <span className="text-brand-yellow">A</span>
-                <span className="text-brand-red">R</span>
-                <span className="text-brand-green">B</span>
-                <span className="text-brand-blue">U</span>
-                <span className="text-brand-yellow">D</span>
-                <span className="text-brand-red">O</span>
-              </div>
-              <div className="absolute -top-3 -right-3 w-6 h-6 bg-brand-salmon rounded-full animate-ping pointer-events-none opacity-40" />
+          <div className="text-center mb-6">
+            <div className="flex justify-center items-center gap-2 mb-4">
+              <img 
+                src="/input_file_2.png" 
+                alt="Tan Barbudo Logo" 
+                referrerPolicy="no-referrer"
+                className="h-28 object-contain drop-shadow-md transform hover:scale-105 transition-transform" 
+              />
             </div>
 
-            <h2 className="text-lg md:text-xl font-display font-medium text-gray-700 mt-5">
-              Academia de Globoflexia
-            </h2>
-            <p className="text-sm text-gray-500 mt-1 max-w-xs mx-auto">
-              ¡Aprende a crear sonrisas con globos inflados de amor! 🎈
-            </p>
+            <div className="flex justify-center items-center gap-3 bg-brand-yellow/10 border border-brand-yellow/30 rounded-2xl p-2.5 max-w-sm mx-auto">
+              <img 
+                src="/input_file_3.png" 
+                alt="Tan Barbudo Caricatura" 
+                referrerPolicy="no-referrer"
+                className="w-16 h-16 object-contain rounded-xl border border-brand-dark/10" 
+              />
+              <div className="text-left">
+                <h2 className="text-sm font-display font-medium text-brand-yellow leading-tight">
+                  Academia de Globoflexia
+                </h2>
+                <p className="text-[11px] text-gray-400">
+                  ¡Aprende a crear sonrisas con globos inflados de amor! 🎈
+                </p>
+              </div>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

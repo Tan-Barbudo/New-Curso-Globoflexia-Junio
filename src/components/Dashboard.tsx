@@ -20,13 +20,15 @@ import {
   Smile,
   Instagram,
   Youtube,
-  Facebook
+  Facebook,
+  Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import VideoPlayer from './VideoPlayer';
 import DocumentsTab from './DocumentsTab';
 import ForumTab from './ForumTab';
 import BalloonInflater from './BalloonInflater';
+import CourseCustomizer from './CourseCustomizer';
 
 interface DashboardProps {
   currentUser: string;
@@ -39,6 +41,7 @@ interface DashboardProps {
   onAddComment: (content: string, category: 'Duda' | 'Logro' | 'Inspiración' | 'General') => void;
   onAddReply: (commentId: string, content: string) => void;
   onToggleCommentLike: (commentId: string) => void;
+  onUpdateModules: (updatedModules: LessonModule[]) => void;
 }
 
 export default function Dashboard({
@@ -51,9 +54,10 @@ export default function Dashboard({
   onToggleLessonComplete,
   onAddComment,
   onAddReply,
-  onToggleCommentLike
+  onToggleCommentLike,
+  onUpdateModules
 }: DashboardProps) {
-  const [activeTab, setActiveTab] = useState<'video' | 'documents' | 'forum' | 'game'>('video');
+  const [activeTab, setActiveTab] = useState<'video' | 'documents' | 'forum' | 'game' | 'admin'>('video');
   const [selectedModuleId, setSelectedModuleId] = useState<string>('mod-1');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -109,9 +113,10 @@ export default function Dashboard({
           {/* Social logos simulation exactly like the shared image info */}
           <div className="hidden md:flex items-center gap-3 bg-white/5 border border-white/10 rounded-full px-3 py-1 text-xs">
             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Redes:</span>
-            <a href="#" className="hover:text-brand-red text-gray-300 transition-colors"><Instagram className="w-4 h-4" /></a>
-            <a href="#" className="hover:text-brand-yellow text-gray-300 transition-colors"><Youtube className="w-4 h-4" /></a>
-            <a href="#" className="hover:text-brand-blue text-gray-300 transition-colors"><Facebook className="w-4 h-4" /></a>
+            <a href="https://www.instagram.com/payasotanbarbudo?igsh=dWo2a3U0ZmhiNWdn" target="_blank" rel="noopener noreferrer" className="hover:text-brand-salmon text-gray-300 transition-colors"><Instagram className="w-4 h-4" /></a>
+            <a href="https://youtube.com/@payasotanbarbudo?si=orYgWrJ4gCb75uxn" target="_blank" rel="noopener noreferrer" className="hover:text-brand-red text-gray-300 transition-colors"><Youtube className="w-4 h-4" /></a>
+            <a href="https://www.facebook.com/share/1CyiA78nQJ/" target="_blank" rel="noopener noreferrer" className="hover:text-brand-blue text-gray-300 transition-colors"><Facebook className="w-4 h-4" /></a>
+            <a href="https://www.tiktok.com/@payasotanbarbudo?_r=1&_t=ZS-94L1Ar177eG" target="_blank" rel="noopener noreferrer" className="hover:text-brand-yellow text-gray-300 transition-colors" title="TikTok"><span className="text-xs font-bold leading-none">🎵</span></a>
           </div>
 
           {/* User profile & Signout */}
@@ -375,6 +380,19 @@ export default function Dashboard({
               <Activity className="w-4.5 h-4.5 text-brand-green" />
               <span>Doblado Virtual 🎈</span>
             </button>
+
+            <button
+              onClick={() => setActiveTab('admin')}
+              id="tab-admin-button"
+              className={`cursor-pointer px-4 py-3 rounded-t-2xl font-display font-bold text-xs md:text-sm uppercase tracking-wider flex items-center gap-2 border-t-3 border-x-3 transition-all ${
+                activeTab === 'admin'
+                  ? 'bg-white border-brand-dark text-brand-dark translate-y-[3px]'
+                  : 'bg-transparent border-transparent text-gray-500 hover:text-brand-dark'
+              }`}
+            >
+              <Sparkles className="w-4.5 h-4.5 text-brand-yellow animate-pulse" />
+              <span>Personalizar Aula ⚙️</span>
+            </button>
           </div>
 
           {/* Active rendering block views */}
@@ -433,6 +451,20 @@ export default function Dashboard({
                   className="max-w-xl mx-auto"
                 >
                   <BalloonInflater />
+                </motion.div>
+              )}
+
+              {activeTab === 'admin' && (
+                <motion.div
+                  key="admin"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <CourseCustomizer
+                    modules={modulesData}
+                    onUpdateModules={onUpdateModules}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
