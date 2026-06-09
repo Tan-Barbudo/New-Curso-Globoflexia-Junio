@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Módulos validation
+    function isValidModule(data) {
+      return data.keys().hasAll(['id', 'title'])
+        && data.id is string
+        && data.id.size() <= 100
+        && data.title is string
+        && data.title.size() <= 200;
+    }
+
+    match /modules/{moduleId} {
+      allow read: if true; // anyone can view lessons
+      allow write: if isSignedIn(); // logged in instructors/students can customize
+    }
+
+    // Forum comments validation
+    function isValidComment(data) {
+      return data.keys().hasAll(['id', 'authorName', 'content', 'category'])
+        && data.id is string
+        && data.id.size() <= 100
+        && data.authorName is string
+        && data.authorName.size() <= 150
+        && data.content is string
+        && data.content.size() <= 5000
+        && data.category is string;
+    }
+
+    match /forum/{commentId} {
+      allow read: if true; // forum is public/shared
+      allow create, update: if isSignedIn() && isValidComment(request.resource.data);
+      allow delete: if isSignedIn();
+    }
+  }
+}

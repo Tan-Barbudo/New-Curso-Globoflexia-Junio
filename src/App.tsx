@@ -3,6 +3,8 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import { MODULES_DATA, INITIAL_COMMENTS } from './data/courseData';
 import { LessonModule, ForumComment, UserStats, DocumentAsset } from './types';
+import { db, isFirebaseConfigured, handleFirestoreError, OperationType } from './firebase';
+import { collection, onSnapshot, setDoc, doc } from 'firebase/firestore';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<string | null>(null);
@@ -15,7 +17,7 @@ export default function App() {
     joinedDate: new Date().toLocaleDateString(),
   });
 
-  // 1. Initial hydration from localStorage
+  // 1. Initial hydration and Firebase listener if configured
   useEffect(() => {
     // Current logged in user
     const savedUser = localStorage.getItem('tb_current_user');
@@ -40,6 +42,45 @@ export default function App() {
     } else {
       setComments(INITIAL_COMMENTS);
       localStorage.setItem('tb_forum_comments_list', JSON.stringify(INITIAL_COMMENTS));
+    }
+
+    // Dynamic Firebase listeners if active
+    if (isFirebaseConfigured && db) {
+      // Listen to modules
+      const unsubModules = onSnapshot(collection(db, 'modules'), (snapshot) => {
+        if (!snapshot.empty) {
+          const list: LessonModule[] = [];
+          snapshot.forEach((d) => {
+            list.push(d.data() as LessonModule);
+          });
+          list.sort((a, b) => a.order - b.order);
+          setModules(list);
+          localStorage.setItem('tb_modules_list', JSON.stringify(list));
+        }
+      }, (err) => {
+        handleFirestoreError(err, OperationType.GET, 'modules');
+      });
+
+      // Listen to forum comments
+      const unsubComments = onSnapshot(collection(db, 'forum'), (snapshot) => {
+        if (!snapshot.empty) {
+          const list: ForumComment[] = [];
+          snapshot.forEach((d) => {
+            list.push(d.data() as ForumComment);
+          });
+          // Sort comments chronologically/dynamically
+          list.sort((a, b) => b.id.localeCompare(a.id));
+          setComments(list);
+          localStorage.setItem('tb_forum_comments_list', JSON.stringify(list));
+        }
+      }, (err) => {
+        handleFirestoreError(err, OperationType.GET, 'forum');
+      });
+
+      return () => {
+        unsubModules();
+        unsubComments();
+      };
     }
   }, []);
 
@@ -92,7 +133,7 @@ export default function App() {
   };
 
   // 5. Forum additions (Fresh post)
-  const handleAddComment = (content: string, category: 'Duda' | 'Logro' | 'Inspiración' | 'General') => {
+  const handleAddComment = async (content: string, category: 'Duda' | 'Logro' | 'Inspiración' | 'General') => {
     if (!currentUser) return;
 
     const newComment: ForumComment = {
@@ -110,15 +151,25 @@ export default function App() {
     const updatedComments = [newComment, ...comments];
     setComments(updatedComments);
     localStorage.setItem('tb_forum_comments_list', JSON.stringify(updatedComments));
+
+    if (isFirebaseConfigured && db) {
+      try {
+        await setDoc(doc(db, 'forum', newComment.id), newComment);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.WRITE, `forum/${newComment.id}`);
+      }
+    }
   };
 
   // 6. Forum Replies additions
-  const handleAddReply = (commentId: string, replyContent: string) => {
+  const handleAddReply = async (commentId: string, replyContent: string) => {
     if (!currentUser) return;
+
+    let targetComment: ForumComment | null = null;
 
     const updatedComments = comments.map((comment) => {
       if (comment.id === commentId) {
-        return {
+        const updated = {
           ...comment,
           replies: [
             ...comment.replies,
@@ -132,30 +183,52 @@ export default function App() {
             },
           ],
         };
+        targetComment = updated;
+        return updated;
       }
       return comment;
     });
 
     setComments(updatedComments);
     localStorage.setItem('tb_forum_comments_list', JSON.stringify(updatedComments));
+
+    if (isFirebaseConfigured && db && targetComment) {
+      try {
+        await setDoc(doc(db, 'forum', commentId), targetComment);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.WRITE, `forum/${commentId}`);
+      }
+    }
   };
 
   // 7. Toggle comment likes count
-  const handleToggleCommentLike = (commentId: string) => {
+  const handleToggleCommentLike = async (commentId: string) => {
+    let targetComment: ForumComment | null = null;
+
     const updatedComments = comments.map((comment) => {
       if (comment.id === commentId) {
         const liked = comment.likedByCurrentUser;
-        return {
+        const updated = {
           ...comment,
           likes: liked ? comment.likes - 1 : comment.likes + 1,
           likedByCurrentUser: !liked,
         };
+        targetComment = updated;
+        return updated;
       }
       return comment;
     });
 
     setComments(updatedComments);
     localStorage.setItem('tb_forum_comments_list', JSON.stringify(updatedComments));
+
+    if (isFirebaseConfigured && db && targetComment) {
+      try {
+        await setDoc(doc(db, 'forum', commentId), targetComment);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.WRITE, `forum/${commentId}`);
+      }
+    }
   };
 
   // Aggregate all files documents from modules
@@ -174,9 +247,19 @@ export default function App() {
   });
 
   // 8. Handle real-time modules editing
-  const handleUpdateModules = (updatedModules: LessonModule[]) => {
+  const handleUpdateModules = async (updatedModules: LessonModule[]) => {
     setModules(updatedModules);
     localStorage.setItem('tb_modules_list', JSON.stringify(updatedModules));
+
+    if (isFirebaseConfigured && db) {
+      try {
+        for (const mod of updatedModules) {
+          await setDoc(doc(db, 'modules', mod.id), mod);
+        }
+      } catch (err) {
+        handleFirestoreError(err, OperationType.WRITE, 'modules');
+      }
+    }
   };
 
   return (

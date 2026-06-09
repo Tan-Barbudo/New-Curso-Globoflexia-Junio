@@ -1,0 +1,46 @@
+{
+  "entities": {
+    "lessonModule": {
+      "title": "Lesson Module",
+      "description": "A module/class customized in the academy",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "videoUrl": { "type": "string" },
+        "videoThumbnail": { "type": "string" },
+        "isBonus": { "type": "boolean" },
+        "isCompleted": { "type": "boolean" }
+      },
+      "required": ["id", "title"]
+    },
+    "forumComment": {
+      "title": "Forum Comment",
+      "description": "A student doubt, achievement, or inspiration shared on the forum",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorAvatar": { "type": "string" },
+        "authorRole": { "type": "string" },
+        "date": { "type": "string" },
+        "content": { "type": "string" },
+        "likes": { "type": "number" },
+        "likedBy": { "type": "array" },
+        "category": { "type": "string" }
+      },
+      "required": ["id", "authorName", "content", "category"]
+    }
+  },
+  "firestore": {
+    "/modules/{moduleId}": {
+      "schema": "lessonModule",
+      "description": "Stores customizable modules"
+    },
+    "/forum/{commentId}": {
+      "schema": "forumComment",
+      "description": "Forum comments"
+    }
+  }
+}
