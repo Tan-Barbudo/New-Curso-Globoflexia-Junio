@@ -59,7 +59,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           <div className="text-center mb-6">
             <div className="flex justify-center items-center gap-2 mb-4">
               <img 
-                src="/input_file_2.png" 
+               src="/New-Curso-Globoflexia-Junio/logo.jpg"
                 alt="Tan Barbudo Logo" 
                 referrerPolicy="no-referrer"
                 className="h-28 object-contain drop-shadow-md transform hover:scale-105 transition-transform" 
@@ -68,7 +68,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
 
             <div className="flex justify-center items-center gap-3 bg-brand-yellow/10 border border-brand-yellow/30 rounded-2xl p-2.5 max-w-sm mx-auto">
               <img 
-                src="/input_file_3.png" 
+             src="/New-Curso-Globoflexia-Junio/tan-con-globos.png"
                 alt="Tan Barbudo Caricatura" 
                 referrerPolicy="no-referrer"
                 className="w-16 h-16 object-contain rounded-xl border border-brand-dark/10" 
