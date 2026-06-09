@@ -3,8 +3,6 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import { MODULES_DATA, INITIAL_COMMENTS } from './data/courseData';
 import { LessonModule, ForumComment, UserStats, DocumentAsset } from './types';
-import { db, isFirebaseConfigured, handleFirestoreError, OperationType } from './firebase';
-import { collection, onSnapshot, setDoc, doc } from 'firebase/firestore';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<string | null>(null);
@@ -44,44 +42,7 @@ export default function App() {
       localStorage.setItem('tb_forum_comments_list', JSON.stringify(INITIAL_COMMENTS));
     }
 
-    // Dynamic Firebase listeners if active
-    if (isFirebaseConfigured && db) {
-      // Listen to modules
-      const unsubModules = onSnapshot(collection(db, 'modules'), (snapshot) => {
-        if (!snapshot.empty) {
-          const list: LessonModule[] = [];
-          snapshot.forEach((d) => {
-            list.push(d.data() as LessonModule);
-          });
-          list.sort((a, b) => a.order - b.order);
-          setModules(list);
-          localStorage.setItem('tb_modules_list', JSON.stringify(list));
-        }
-      }, (err) => {
-        handleFirestoreError(err, OperationType.GET, 'modules');
-      });
-
-      // Listen to forum comments
-      const unsubComments = onSnapshot(collection(db, 'forum'), (snapshot) => {
-        if (!snapshot.empty) {
-          const list: ForumComment[] = [];
-          snapshot.forEach((d) => {
-            list.push(d.data() as ForumComment);
-          });
-          // Sort comments chronologically/dynamically
-          list.sort((a, b) => b.id.localeCompare(a.id));
-          setComments(list);
-          localStorage.setItem('tb_forum_comments_list', JSON.stringify(list));
-        }
-      }, (err) => {
-        handleFirestoreError(err, OperationType.GET, 'forum');
-      });
-
-      return () => {
-        unsubModules();
-        unsubComments();
-      };
-    }
+    
   }, []);
 
   const hydrateUserData = (username: string) => {
@@ -152,13 +113,7 @@ export default function App() {
     setComments(updatedComments);
     localStorage.setItem('tb_forum_comments_list', JSON.stringify(updatedComments));
 
-    if (isFirebaseConfigured && db) {
-      try {
-        await setDoc(doc(db, 'forum', newComment.id), newComment);
-      } catch (err) {
-        handleFirestoreError(err, OperationType.WRITE, `forum/${newComment.id}`);
-      }
-    }
+  
   };
 
   // 6. Forum Replies additions
@@ -192,13 +147,7 @@ export default function App() {
     setComments(updatedComments);
     localStorage.setItem('tb_forum_comments_list', JSON.stringify(updatedComments));
 
-    if (isFirebaseConfigured && db && targetComment) {
-      try {
-        await setDoc(doc(db, 'forum', commentId), targetComment);
-      } catch (err) {
-        handleFirestoreError(err, OperationType.WRITE, `forum/${commentId}`);
-      }
-    }
+   
   };
 
   // 7. Toggle comment likes count
@@ -222,13 +171,7 @@ export default function App() {
     setComments(updatedComments);
     localStorage.setItem('tb_forum_comments_list', JSON.stringify(updatedComments));
 
-    if (isFirebaseConfigured && db && targetComment) {
-      try {
-        await setDoc(doc(db, 'forum', commentId), targetComment);
-      } catch (err) {
-        handleFirestoreError(err, OperationType.WRITE, `forum/${commentId}`);
-      }
-    }
+  
   };
 
   // Aggregate all files documents from modules
@@ -251,15 +194,8 @@ export default function App() {
     setModules(updatedModules);
     localStorage.setItem('tb_modules_list', JSON.stringify(updatedModules));
 
-    if (isFirebaseConfigured && db) {
-      try {
-        for (const mod of updatedModules) {
-          await setDoc(doc(db, 'modules', mod.id), mod);
-        }
-      } catch (err) {
-        handleFirestoreError(err, OperationType.WRITE, 'modules');
-      }
-    }
+   
+     
   };
 
   return (
