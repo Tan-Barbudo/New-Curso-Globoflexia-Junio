@@ -1,0 +1,6 @@
+{
+  "name": "Academia de Globoflexia Tan Barbudo",
+  "description": "Una plataforma interactiva para aprender globoflexia con la metodología alegre y creativa de Tan Barbudo, incluyendo 13 módulos, 4 bonus, foro, guías y simulador de modelado y doblado.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

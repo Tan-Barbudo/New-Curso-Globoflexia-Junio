@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Montserrat', sans-serif;
+  --font-display: 'Oswald', sans-serif;
+  
+  --color-brand-yellow: #D97706;  /* Accent amber/tan */
+  --color-brand-red: #EF4444;     /* Warning Red/Logo element */
+  --color-brand-green: #10B981;   /* Achievement Green */
+  --color-brand-dark: #1C1917;    /* Stone 900 base elements */
+  --color-brand-beige: #292524;   /* Stone 800 layout elements */
+  --color-brand-blue: #3B82F6;    /* Secondary details */
+  --color-brand-salmon: #F59E0B;  /* Highlight amber-orange */
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #121212 !important;
+  color: #E7E5E4 !important;
+}
+
+/* Keep main page containers dark to fit "Geometric Balance" */
+#login-container, #dashboard-wrapper {
+  background-color: #121212 !important;
+}
+
+/* Top primary layouts mapping header to exact #1a1a1a as instructed */
+#main-header {
+  background-color: #161616 !important;
+  border-bottom: 2px solid #292524 !important;
+}
+
+#course-sidebar-navigation {
+  background-color: #161616 !important;
+  border-right: 2px solid #292524 !important;
+}
+
+#slogans-marquee {
+  background-color: #1C1917 !important;
+  border-top: 1px solid #292524 !important;
+  border-bottom: 1px solid #292524 !important;
+  color: #D97706 !important;
+}
+
+/* Remap generic utility styling so we do not have bright white fields */
+.bg-white {
+  background-color: #1A1A1A !important;
+  color: #E7E5E4 !important;
+  border-color: #292524 !important;
+}
+
+.bg-\[\#FFFDF9\], .bg-\[\#FFFBF5\] {
+  background-color: #121212 !important;
+}
+
+.bg-[#FFF4E6] {
+  background-color: #292524 !important;
+  color: #F5F5F4 !important;
+}
+
+.bg-[#FFFDF9] {
+  background-color: #121212 !important;
+}
+
+/* Form container helper updates */
+.bg-brand-beige\/10 {
+  background-color: rgba(68, 64, 60, 0.15) !important;
+}
+
+.bg-brand-beige\/20 {
+  background-color: rgba(68, 64, 60, 0.25) !important;
+}
+
+.bg-brand-beige\/50 {
+  background-color: rgba(68, 64, 60, 0.45) !important;
+}
+
+/* Dynamic color re-pairings */
+.text-brand-dark, .text-gray-900, .text-stone-900, .text-gray-800 {
+  color: #F5F5F4 !important;
+}
+
+.text-gray-700, .text-stone-700 {
+  color: #D6D3D1 !important;
+}
+
+.text-gray-600, .text-stone-600 {
+  color: #A8A29E !important;
+}
+
+.text-gray-500, .text-stone-500, .text-gray-400, .text-stone-400 {
+  color: #78716C !important;
+}
+
+/* Font styles matching Oswald */
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display) !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Beautiful Inputs & Textareas configuration fields */
+input, textarea, select {
+  background-color: #18181B !important;
+  border: 1.5px solid #27272A !important;
+  color: #F4F4F5 !important;
+  border-radius: 0.5rem !important;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: #D97706 !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2);
+}
+
+/* Smooth subtle grid borders for clean outlines */
+.border-brand-dark, .border-4, .border-3, .border-2, .border {
+  border-color: #27272A !important;
+}
+
+/* Soft Modern geometric design shadows instead of cartoon stickers */
+.sticker-shadow {
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.5);
+}
+
+.sticker-shadow-sm {
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.4);
+}
+
+.sticker-shadow-lg {
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* Action Hover state enhancements */
+.sticker-focus:focus-within {
+  outline: 2px solid #D97706;
+}
+
+/* Custom scrollbar matching Tan gold amber color */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #121212;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272A;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D97706;
+}
+
