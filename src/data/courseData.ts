@@ -1,539 +1,156 @@
-import { LessonModule, DocumentAsset, ForumComment } from '../types';
+import { LessonModule, ForumComment } from '../types';
+
+const embed = (videoId: string) => videoId ? `https://www.youtube.com/embed/${videoId}` : '';
+const thumbnail = (videoId: string) => videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : '';
 
 export const MODULES_DATA: LessonModule[] = [
-  // 16 MODULOS REGULARES
   {
-    id: 'mod-1',
-    title: '1. Los Primeros Pasos en la Globoflexia',
-    description: 'Aprende los fundamentos del modelado de globos y la magia detrás de transformar aire en sonrisas instantáneas.',
-    isBonus: false,
-    order: 1,
-    duration: '15 min',
-    difficulty: 'Principiante',
-    learnPoints: [
-      'Bienvenida oficial al curso de la mano de Tan Barbudo.',
-      'Mentalidad creativa: Todo error es parte del show.',
-      'Qué es exactamente la globoflexia con propósito.',
-      'Sistemas recomendados para sacarle el máximo partido a este curso.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/9Bv_UbeVlqA',
-    videoThumbnail: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-1',
-        title: 'Guía de Bienvenida - El Manifiesto Barbudo',
-        size: '1.2 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'La mentalidad del artista de globos de Tan Barbudo, filosofía de diversión con propósito.'
-      }
-    ]
+    id: 'intro', title: 'Introducción al Curso de Globoflexia',
+    description: 'En este video te doy la bienvenida y te explico cómo trabajaremos durante las próximas semanas.',
+    isBonus: false, order: 0, duration: 'Bienvenida', difficulty: 'Principiante',
+    learnPoints: ['Cómo está organizado el curso.', 'Cómo avanzar y aprovechar cada clase.', 'Qué necesitarás durante las próximas semanas.'],
+    videoUrl: embed('W0r-6JJ8SZo'), videoThumbnail: thumbnail('W0r-6JJ8SZo'),
   },
   {
-    id: 'mod-2',
-    title: '2. Conociendo los Materiales',
-    description: 'Conoce los calibres profesionales (como el clásico 260Q), marcas adecuadas, infladores de doble acción y el cuidado del material.',
-    isBonus: false,
-    order: 2,
-    duration: '20 min',
-    difficulty: 'Principiante',
-    learnPoints: [
-      'Tipos de globos y calibres profesionales.',
-      'Medidas estándar para figuras comerciales.',
-      'Marcas profesionales biodegradables (Sempertex, Qualatex).',
-      'Herramientas básicas e infladores de doble acción.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/S_8qM8Q7sI0',
-    videoThumbnail: 'https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-2',
-        title: 'Ficha Técnica de Calibres y Marcas Profesionales',
-        size: '800 KB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Tabla comparativa para comprar globos sin desperdiciar dinero.'
-      }
-    ]
+    id: 'mod-1', title: '1. Organización y Primeros Pasos',
+    description: 'En esta primera clase conocerás cómo está organizado el curso y comenzaremos a construir una base sólida antes de crear nuestras primeras figuras.',
+    isBonus: false, order: 1, duration: 'Clase grabada', difficulty: 'Principiante',
+    learnPoints: ['Organización general del curso.', 'Bases necesarias antes de comenzar.', 'Preparación para las primeras figuras.'],
+    videoUrl: embed('uabgTdjDMfk'), videoThumbnail: thumbnail('uabgTdjDMfk'),
   },
   {
-    id: 'mod-3',
-    title: '3. El Arte de Inflar y Cuidar los Globos',
-    description: 'Domina la técnica del inflado correcto dejando la cola de descompresión y entiende la conservación del látex.',
-    isBonus: false,
-    order: 3,
-    duration: '18 min',
-    difficulty: 'Principiante',
-    learnPoints: [
-      'Técnicas ergonómicas para un inflado correcto.',
-      'Duración óptima de la figura inflada.',
-      'Manejo de gas helio vs aire convencional.',
-      'Cuidados esenciales contra el calor y el sol.',
-      'Errores comunes al empezar y cómo evitarlos.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/jZ_v7G_2N1Y',
-    videoThumbnail: 'https://images.unsplash.com/photo-1549417229-aa67d3263c09?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-3',
-        title: 'Infografía: Pasos del Inflado y Técnica de Nudo Rápido',
-        size: '1.5 MB',
-        format: 'PNG',
-        downloadUrl: '#',
-        description: 'Póster descargable ilustrado para tener al lado de tu mesa de práctica.'
-      }
-    ]
+    id: 'mod-2', title: '2. Infladores para Globoflexia',
+    description: 'Conocerás los diferentes tipos de infladores para globoflexia, sus características, ventajas y cuándo conviene utilizar cada uno.',
+    isBonus: false, order: 2, duration: 'Clase grabada', difficulty: 'Principiante',
+    learnPoints: ['Tipos de infladores.', 'Ventajas de cada modelo.', 'Cómo elegir el inflador adecuado.'],
+    videoUrl: embed('mu4jCp8BN3o'), videoThumbnail: thumbnail('mu4jCp8BN3o'),
   },
   {
-    id: 'mod-4',
-    title: '4. Técnicas Fundamentales',
-    description: 'Aprende los giros estelares que forman los bloques constructores de cualquier diseño en globoflexia.',
-    isBonus: false,
-    order: 4,
-    duration: '25 min',
-    difficulty: 'Principiante',
-    learnPoints: [
-      'Amarres seguros que no se deshacen.',
-      'Burbujas simétricas de varios calibres.',
-      'Torsiones por pliegue, de pellizco y de bucle.',
-      'La famosa técnica ergonómica 4x4.',
-      'Creación de la cabeza del perro simétrico.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/K8Z029Oq4x4',
-    videoThumbnail: 'https://images.unsplash.com/photo-1485550409059-9afb054cada4?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-4',
-        title: 'Glosario Visual de Torsiones Técnicas',
-        size: '950 KB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Diccionario con fotos de cada tipo de doblez: pinch, lock, fold, tulip.'
-      }
-    ]
+    id: 'mod-3', title: '3. Tipos y Medidas de Globos',
+    description: 'Conocerás a fondo el material con el que trabajaremos: los diferentes tipos de globos, qué significan sus medidas y cómo elegir globos de buena calidad.',
+    isBonus: false, order: 3, duration: 'Clase grabada', difficulty: 'Principiante',
+    learnPoints: ['Tipos de globos.', 'Significado de sus medidas.', 'Criterios para elegir globos de calidad.'],
+    videoUrl: embed('NNaU2kGoMxY'), videoThumbnail: thumbnail('NNaU2kGoMxY'),
   },
   {
-    id: 'mod-5',
-    title: '5. Figuras para Comenzar',
-    description: 'Pon en práctica tus dotes esculpiendo tus primeras tres figuras clásicas que vuelven locos a los niños.',
-    isBonus: false,
-    order: 5,
-    duration: '22 min',
-    difficulty: 'Principiante',
-    learnPoints: [
-      'La clásica e invencible espada pirata.',
-      'La margarita estelar de pétalos de bucle.',
-      'La simpática y diminuta abejita movediza.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/ZqRorKms148',
-    videoThumbnail: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-5',
-        title: 'Esquema de Medidas en Dedos: Espada y Flor',
-        size: '500 KB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Medida exacta para que las proporciones queden equilibradas.'
-      }
-    ]
+    id: 'mod-4', title: '4. Inflado, Nudos y Torsiones Básicas',
+    description: 'Aprenderás a inflar correctamente un globo, realizar nudos seguros y dominar las torsiones básicas que son la base de la globoflexia.',
+    isBonus: false, order: 4, duration: 'Clase grabada', difficulty: 'Principiante',
+    learnPoints: ['Inflado correcto.', 'Nudos seguros.', 'Torsiones fundamentales.'],
+    videoUrl: embed('991rgpDtq1g'), videoThumbnail: thumbnail('991rgpDtq1g'),
   },
   {
-    id: 'mod-6',
-    title: '6. Sombreros y Diversión',
-    description: 'Transforma la fiesta en un carnaval vistoso creando coronas y accesorios portátiles que desatan risas.',
-    isBonus: false,
-    order: 6,
-    duration: '15 min',
-    difficulty: 'Principiante',
-    learnPoints: [
-      'El sombrero flamenco ajustable.',
-      'El gorro marciano con antenas locas.',
-      'El micrófono de globos para karaoke divertido.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/p1oE_LwunDo',
-    videoThumbnail: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-6',
-        title: 'Catálogo Visual de Sombreros de Carnaval',
-        size: '1.1 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Aprende a medir cabezas de forma interactiva y cómica.'
-      }
-    ]
+    id: 'mod-5', title: '5. Mis Primeras Figuras',
+    description: 'Comenzarás a transformar las técnicas aprendidas en tus primeras figuras. Practicaremos la técnica 4x4 y realizaremos espada, flor y perro.',
+    isBonus: false, order: 5, duration: 'Clase grabada', difficulty: 'Principiante',
+    learnPoints: ['Técnica 4x4.', 'Espada, flor y perro.', 'Seguridad, velocidad y precisión.'],
+    videoUrl: embed('jyjP7Wy31p0'), videoThumbnail: thumbnail('jyjP7Wy31p0'),
   },
   {
-    id: 'mod-7',
-    title: '7. Figuras vs Personajes',
-    description: 'Aprende a diferenciar entre modelar una simple réplica plástica e inyectar carismas alegres a una obra.',
-    isBonus: false,
-    order: 7,
-    duration: '25 min',
-    difficulty: 'Intermedio',
-    learnPoints: [
-      'La paleta de colores para evocar emociones.',
-      'Diseño visual y líneas de fuerza en el látex.',
-      'Interpretación cómica de personajes.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/hbeREw9m_hE',
-    videoThumbnail: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-7',
-        title: 'Esquema de Colores Emocionales',
-        size: '1.4 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Aprende qué colores combinan mejor para evocar alegría.'
-      }
-    ]
+    id: 'mod-6', title: '6. Sombreros con Globos',
+    description: 'Aprenderás a crear estructuras básicas de sombreros, adaptarlas y transformarlas en diseños divertidos para cumpleaños, fiestas y actividades infantiles.',
+    isBonus: false, order: 6, duration: 'Clase grabada', difficulty: 'Principiante',
+    learnPoints: ['Estructuras básicas de sombreros.', 'Adaptación de diseños.', 'Uso en fiestas y actividades infantiles.'],
+    videoUrl: embed('ZKy5iBUcZrU'), videoThumbnail: thumbnail('ZKy5iBUcZrU'),
   },
   {
-    id: 'mod-8',
-    title: '8. Construyendo Personajes',
-    description: 'Estudia el ensamble de proporciones humanas anatómicas usando múltiples globos y pellizcos de bloqueo.',
-    isBonus: false,
-    order: 8,
-    duration: '30 min',
-    difficulty: 'Intermedio',
-    learnPoints: [
-      'Modelado de cabezas expresivas.',
-      'Brazos y manos con giros pellizco.',
-      'Piernas estructuradas y pies planos.',
-      'Control riguroso de proporciones.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/bZnt9T_u7F8',
-    videoThumbnail: 'https://images.unsplash.com/photo-1559251606-c623743a6d76?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-8',
-        title: 'Guía de Construcción Anatómica de Personajes',
-        size: '2.0 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Manual de proporciones estandarizadas para personajes de varios globos.'
-      }
-    ]
+    id: 'mod-7', title: '7. Interpretando y Creando Nuevas Figuras',
+    description: 'Ampliaremos el repertorio combinando torsiones conocidas. Aprenderás a interpretar una figura, reconocer sus partes y reutilizar técnicas en diferentes diseños.',
+    isBonus: false, order: 7, duration: 'Clase grabada', difficulty: 'Intermedio',
+    learnPoints: ['Interpretación de figuras.', 'Reconocimiento de sus partes.', 'Combinación de técnicas conocidas.'],
+    videoUrl: embed('8Tsgn9pm6HU'), videoThumbnail: thumbnail('8Tsgn9pm6HU'),
   },
   {
-    id: 'mod-9',
-    title: '9. Estilo Chibi con Globos',
-    description: 'La belleza en lo diminuto. Diseña figuras cabezonas de estilo kawaii que cautivan con minimalismo estético.',
-    isBonus: false,
-    order: 9,
-    duration: '28 min',
-    difficulty: 'Intermedio',
-    learnPoints: [
-      'Principios del diseño chibi.',
-      'Proporciones de cabeza grande y cuerpo diminuto.',
-      'Expresiones cautivantes con trazos mínimos.',
-      'Técnicas de personalización.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/b6mZpD96vHw',
-    videoThumbnail: 'https://images.unsplash.com/photo-1552728089-57bdde30ebd3?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-9',
-        title: 'Plantilla de Ojos Chibi y Expresiones Tiernas',
-        size: '1.2 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Plantillas que puedes imprimir o calcar sobre tus esferas de látex.'
-      }
-    ]
+    id: 'mod-8', title: '8. Combinando Medidas de Globos',
+    description: 'Aprenderás a incorporar globos 160, 260 y 350, eligiendo la medida adecuada y combinando tamaños, formas y colores para crear figuras más llamativas.',
+    isBonus: false, order: 8, duration: 'Clase grabada', difficulty: 'Intermedio',
+    learnPoints: ['Uso de globos 160, 260 y 350.', 'Elección de la medida adecuada.', 'Combinación de tamaños, formas y colores.'],
+    videoUrl: embed('BZIRceQGIYQ'), videoThumbnail: thumbnail('BZIRceQGIYQ'),
   },
   {
-    id: 'mod-10',
-    title: '10. Cómo Crear Tus Propias Figuras',
-    description: 'Desbloquea el libre albedrío artístico. Pasa de replicar tutoriales a inventar tus propias criaturas.',
-    isBonus: false,
-    order: 10,
-    duration: '24 min',
-    difficulty: 'Intermedio',
-    learnPoints: [
-      'Fomentar la creatividad libre infantil.',
-      'Adaptación geométrica a formas de la naturaleza.',
-      'Improvisación teatral en público activo.',
-      'Método de bocetado rápido en un globo.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/oQFrC1_N2J4',
-    videoThumbnail: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-10',
-        title: 'Bitácora Barbuda del Diseñador',
-        size: '750 KB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Ficha para dibujar y estructurar tus nuevos diseños y dobles.'
-      }
-    ]
+    id: 'mod-9', title: '9. Figuras Estilo Chibi',
+    description: 'Crearás figuras estilo chibi, caracterizadas por cabezas grandes, cuerpos pequeños y una apariencia tierna y divertida.',
+    isBonus: false, order: 9, duration: 'Clase grabada', difficulty: 'Intermedio',
+    learnPoints: ['Proporciones del estilo chibi.', 'Construcción de cabezas y cuerpos.', 'Personalidad y detalles.'],
+    videoUrl: embed('hZog_ccBe3s'), videoThumbnail: thumbnail('hZog_ccBe3s'),
   },
   {
-    id: 'mod-11',
-    title: '11. Globoflexia para Cumpleaños y Eventos',
-    description: 'Sobrevive y reina en tus primeros eventos reales con alta afluencia de niños sin perder los cabales.',
-    isBonus: false,
-    order: 11,
-    duration: '26 min',
-    difficulty: 'Intermedio',
-    learnPoints: [
-      'Atención infantil respetuosa y lúdica.',
-      'Modelado veloz en menos de 45 segundos.',
-      'Organización de filas interactivas.',
-      'Crear una experiencia mágica inolvidable.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/A08pUuEun3s',
-    videoThumbnail: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-11',
-        title: 'Manual de Logística y Filas Divertidas',
-        size: '3.1 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Estrategias y chistes para calmar a los niños ansiosos en la fila.'
-      }
-    ]
+    id: 'mod-10', title: '10. Figuras de Mayor Dificultad',
+    description: 'Combinaremos varias técnicas dentro de una misma figura, observando proporciones, uniendo partes y trabajando detalles para lograr resultados más profesionales.',
+    isBonus: false, order: 10, duration: 'Clase grabada', difficulty: 'Intermedio',
+    learnPoints: ['Combinación de técnicas.', 'Proporciones y unión de partes.', 'Detalles para un acabado profesional.'],
+    videoUrl: embed('6JKL09Wr3cY'), videoThumbnail: thumbnail('6JKL09Wr3cY'),
   },
   {
-    id: 'mod-12',
-    title: '12. Presentación y Decoración',
-    description: 'Aprende a empaquetar tus figuras y a conformar arcos o torres llamativas para elevar el caché visual del salón.',
-    isBonus: false,
-    order: 12,
-    duration: '35 min',
-    difficulty: 'Avanzado',
-    learnPoints: [
-      'Combos de figuras agrupadas temáticamente.',
-      'Exhibición e iluminación de esculturas.',
-      'Armado de marcos de decoración básica.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/9Bv_UbeVlqA',
-    videoThumbnail: 'https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-12',
-        title: 'Guía de Arcos y Columnas para Fiestas',
-        size: '1.8 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Esquema métrico para armar estructuras de fondo para el pastel.'
-      }
-    ]
+    id: 'mod-11', title: '11. Replicando y Diseñando Figuras',
+    description: 'Pasarás de copiar figuras a comprender cómo están construidas: observar formas, dividir una figura en partes y adaptar técnicas para crear diseños propios.',
+    isBonus: false, order: 11, duration: 'Clase grabada', difficulty: 'Intermedio',
+    learnPoints: ['Análisis de formas.', 'División de la figura en partes.', 'Adaptación y creación de diseños propios.'],
+    videoUrl: embed('g1csfJzci4w'), videoThumbnail: thumbnail('g1csfJzci4w'),
   },
   {
-    id: 'mod-13',
-    title: '13. Emprendimiento con Globos',
-    description: 'Transforma tus globos en un rentable negocio de fin de semana. Precios correctos y marketing estético.',
-    isBonus: false,
-    order: 13,
-    duration: '40 min',
-    difficulty: 'Avanzado',
-    learnPoints: [
-      'Cómo cobrar tarifas profesionales por hora y por pieza.',
-      'Cómo comercializar tu show sin prostituir precios.',
-      'Sistemas para captar tus primeros 5 clientes de manera veloz.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/S_8qM8Q7sI0',
-    videoThumbnail: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-13',
-        title: 'Plantilla de Cotización de Eventos e Interiores',
-        size: '1.5 MB',
-        format: 'XLSX',
-        downloadUrl: '#',
-        description: 'Calculadora de costos de látex y mano de obra.'
-      }
-    ]
+    id: 'mod-12', title: '12. Emprendiendo con Globos',
+    description: 'Aprenderás sobre costos, materiales, cálculo de precios, tiempo de trabajo, presentación del servicio y cómo comenzar a ofrecer globoflexia en eventos.',
+    isBonus: false, order: 12, duration: 'Clase grabada', difficulty: 'Intermedio',
+    learnPoints: ['Costos y materiales.', 'Cálculo de precios y tiempo.', 'Presentación y venta del servicio.'],
+    videoUrl: embed('4Yf0n9S5VfI'), videoThumbnail: thumbnail('4Yf0n9S5VfI'),
   },
   {
-    id: 'mod-14',
-    title: '14. Menú de Globos y Canva',
-    description: 'Crea catálogos bellos y visuales que faciliten la elección del niño sin abrumar tu espalda infladora.',
-    isBonus: false,
-    order: 14,
-    duration: '30 min',
-    difficulty: 'Intermedio',
-    learnPoints: [
-      'Armado de catálogo con códigos de color de dificultad.',
-      'Diseño en Canva usando plantillas minimalistas.',
-      'Promoción digital en Instagram y Facebook.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/jZ_v7G_2N1Y',
-    videoThumbnail: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-14',
-        title: 'Plantilla de Canva para Catálogo Barbudo',
-        size: '150 KB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Enlace directo a plantillas editables en Canva para tu marca.'
-      }
-    ]
+    id: 'mod-13', title: '13. Globos y Medio Ambiente',
+    description: 'Conocerás el látex, la biodegradabilidad, la compostabilidad, los globos metalizados y el helio, junto con buenas prácticas de uso y descarte responsable.',
+    isBonus: false, order: 13, duration: 'Clase grabada', difficulty: 'Principiante',
+    learnPoints: ['Látex y biodegradabilidad.', 'Globos metalizados y helio.', 'Uso y descarte responsable.'],
+    videoUrl: embed('2UIMpBKhDWU'), videoThumbnail: thumbnail('2UIMpBKhDWU'),
   },
   {
-    id: 'mod-15',
-    title: '15. Globos y Medio Ambiente',
-    description: 'Inculca valores de conservación. Conoce la verdad ecológica del látex 100% biodegradable.',
-    isBonus: false,
-    order: 15,
-    duration: '22 min',
-    difficulty: 'Principiante',
-    learnPoints: [
-      'Por qué usar globos biodegradables y ecológicos.',
-      'Técnicas de reciclado y desechado correcto compostable.',
-      'Uso responsable educativo con el público infantil.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/K8Z029Oq4x4',
-    videoThumbnail: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-15',
-        title: 'Folleto Ecológico Educativo para Padres',
-        size: '1.1 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Folleto didáctico explicativo de látex orgánico.'
-      }
-    ]
+    id: 'mod-14', title: '14. Menú de Figuras con Globos',
+    description: 'Organizarás tus figuras en un menú práctico, seleccionando diseños según dificultad y tiempo, limitando opciones y presentando el repertorio claramente.',
+    isBonus: false, order: 14, duration: 'Clase grabada', difficulty: 'Intermedio',
+    learnPoints: ['Selección de diseños.', 'Organización por dificultad y tiempo.', 'Presentación clara del repertorio.'],
+    videoUrl: embed('HvO4XDg0OKg'), videoThumbnail: thumbnail('HvO4XDg0OKg'),
   },
   {
-    id: 'mod-16',
-    title: '16. Tu Camino Continúa',
-    description: 'Resumen final de las lecciones del formador y el gran paso a la graduación como Maestro Barbudo.',
-    isBonus: false,
-    order: 16,
-    duration: '20 min',
-    difficulty: 'Avanzado',
-    learnPoints: [
-      'Resumen de técnicas y trucos de confianza.',
-      'Próximos pasos profesionales.',
-      'Inspiración y cierre del curso de Globoflexia.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/ZqRorKms148',
-    videoThumbnail: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-16',
-        title: 'Certificado Final de Globoflexia',
-        size: '2.5 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Certificado de graduación firmado por la Academia Tan Barbudo.'
-      }
-    ]
-  },
-
-  // 4 BONUS EXTRA
-  {
-    id: 'bonus-1',
-    title: 'Bonus 1: Historias con Globos 🎭',
-    isBonus: true,
-    order: 17,
-    description: 'El arte del storytelling inflable. Haz que cada torsión acompañe una fábula cómica encantadora.',
-    duration: '35 min',
-    difficulty: 'Principiante',
-    learnPoints: [
-      'Estructuración de cuentos cómicos infantiles.',
-      'Uso del globo como accesorio cómico de personajes de cuentos.',
-      'Manejo de silencios y chirridos para ambientación acústica natural.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/b6mZpD96vHw',
-    videoThumbnail: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-b1',
-        title: 'Guión Escrito de Cuentos Animados',
-        size: '1.4 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Fábulas de 5 minutos listas para actuar con tus globos.'
-      }
-    ]
+    id: 'mod-15', title: '15. Globoflexia en Cumpleaños y Eventos',
+    description: 'Aprenderás qué preguntar antes de un evento, calcular tiempos, organizar turnos, elegir figuras, preparar materiales e interactuar con el público.',
+    isBonus: false, order: 15, duration: 'Clase grabada', difficulty: 'Intermedio',
+    learnPoints: ['Planificación del evento.', 'Cálculo de tiempos y organización de turnos.', 'Preparación e interacción con el público.'],
+    videoUrl: embed('C9NOWPMT-kQ'), videoThumbnail: thumbnail('C9NOWPMT-kQ'),
   },
   {
-    id: 'bonus-2',
-    title: 'Bonus 2: Trucos con Globos 🎪',
-    isBonus: true,
-    order: 18,
-    description: 'Ilusionismo cómico. Engaña a la gravedad y a las leyes de la física con el aire templado.',
-    duration: '30 min',
-    difficulty: 'Intermedio',
-    learnPoints: [
-      'El globo irrompible atravesado con aguja.',
-      'Efectos visuales estáticos y de fricción alegre.',
-      'El secreto del globo movedizo que obedece tu voz.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/oQFrC1_N2J4',
-    videoThumbnail: 'https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-b2',
-        title: 'Manual de Ilusionismo para Payasos',
-        size: '1.2 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Explicación secreta de 5 trucos de magia inflables.'
-      }
-    ]
+    id: 'mod-16', title: '16. Últimas Figuras y Cierre',
+    description: 'Realizaremos nuevas figuras, repasaremos los conocimientos adquiridos y veremos cómo continuar practicando, ampliar el repertorio y desarrollar un estilo propio.',
+    isBonus: false, order: 16, duration: 'Clase grabada', difficulty: 'Avanzado',
+    learnPoints: ['Aplicación final de las técnicas.', 'Repaso del recorrido.', 'Próximos pasos y estilo propio.'],
+    videoUrl: embed('vqgb5m7Wfrw'), videoThumbnail: thumbnail('vqgb5m7Wfrw'),
   },
   {
-    id: 'bonus-3',
-    title: 'Bonus 3: Juegos y Dinámicas con Globos 🎉',
-    isBonus: true,
-    order: 19,
-    description: 'Espacio recreativo interactivo. Juegos colectivos que activan la energía cómica infantil.',
-    duration: '25 min',
-    difficulty: 'Principiante',
-    learnPoints: [
-      'La carrera de botes propulsados por aire de globo.',
-      'Dinámicas cooperativas sin explosión.',
-      'Pasar el globo gigante en cadena humana.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/A08pUuEun3s',
-    videoThumbnail: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-b3',
-        title: 'Recetario de Dinámicas Grupales',
-        size: '1.5 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Fichero interactivo con 12 juegos listos para iniciar en cualquier patio.'
-      }
-    ]
+    id: 'bonus-1', title: 'Bonus 1: Contando Historias con Globos',
+    description: 'Aprende a utilizar figuras y transformaciones con globos para acompañar historias, captar la atención y comunicar un mensaje.',
+    isBonus: true, order: 17, duration: 'Clase bonus', difficulty: 'Intermedio',
+    learnPoints: ['Estructura de una historia con globos.', 'Transformaciones visuales.', 'Participación y mensaje final.'],
+    videoUrl: embed('dlz4x84Ho-E'), videoThumbnail: thumbnail('dlz4x84Ho-E'),
   },
   {
-    id: 'bonus-4',
-    title: 'Bonus 4: Creatividad Escénica y Rutinas ✨',
-    isBonus: true,
-    order: 20,
-    description: 'Logra dominio majestuoso del espacio escénico y saca risas unificadoras partiendo de rutinas estructuradas.',
-    duration: '45 min',
-    difficulty: 'Avanzado',
-    learnPoints: [
-      'Gesticulación, voz y expresión corporal en eventos.',
-      'Cómo hilar chistes recurrentes de enredos con globos.',
-      'El show cómico del inflado imposible sin soltar la sonrisa.'
-    ],
-    videoUrl: 'https://www.youtube.com/embed/9Bv_UbeVlqA',
-    videoThumbnail: 'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&auto=format&fit=crop&q=60',
-    documents: [
-      {
-        id: 'doc-b4',
-        title: 'Libreto Barbudo de Humor Escénico',
-        size: '2.8 MB',
-        format: 'PDF',
-        downloadUrl: '#',
-        description: 'Rutinas cómicas completas de teatrito de humor con látex.'
-      }
-    ]
-  }
+    id: 'bonus-2', title: 'Bonus 2: Estructura y Trucos usando Globoflexia',
+    description: 'Descubre cómo estructurar y presentar trucos con globos para crear expectativa, sorpresa y un cierre memorable.',
+    isBonus: true, order: 18, duration: 'Clase bonus', difficulty: 'Intermedio',
+    learnPoints: ['Estructura de presentación.', 'Trucos y efectos con globos.', 'Sorpresa y cierre.'],
+    videoUrl: embed('EeHNfRi13eQ'), videoThumbnail: thumbnail('EeHNfRi13eQ'),
+  },
+  {
+    id: 'bonus-3', title: 'Bonus 3: Rutinas y Guiones con Globos',
+    description: 'Contenido en preparación. Aquí aprenderás a transformar trucos y figuras en rutinas completas con estructura, interacción y cierre.',
+    isBonus: true, order: 19, duration: 'Próximamente', difficulty: 'Intermedio',
+    learnPoints: ['Estructura de rutinas.', 'Interacción con el público.', 'Creación de guiones con globos.'],
+    videoUrl: '', videoThumbnail: '',
+  },
+  {
+    id: 'bonus-4', title: 'Bonus 4: Globoterapia Recreativa',
+    description: 'Contenido en preparación. Trabajaremos participación, creatividad, expresión, juego e interacción mediante actividades recreativas con globos.',
+    isBonus: true, order: 20, duration: 'Próximamente', difficulty: 'Intermedio',
+    learnPoints: ['Participación y creatividad.', 'Expresión y juego.', 'Actividades recreativas con globos.'],
+    videoUrl: '', videoThumbnail: '',
+  },
 ];
 
 // El foro comienza vacío. Las publicaciones reales se cargan desde Firestore.
