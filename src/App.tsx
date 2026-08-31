@@ -238,7 +238,14 @@ export default function App() {
     } catch (error: any) {
       if (error?.code !== 'auth/popup-closed-by-user') {
         console.error('Error al ingresar con Google:', error);
-        setAuthError('No se pudo ingresar con Google. Inténtalo nuevamente.');
+        const errorCode = typeof error?.code === 'string' ? error.code : 'error-desconocido';
+        const friendlyMessage: Record<string, string> = {
+          'auth/popup-blocked': 'El navegador bloqueó la ventana de Google. Permite las ventanas emergentes y vuelve a intentarlo.',
+          'auth/unauthorized-domain': 'Este dominio todavía no está autorizado en Firebase.',
+          'auth/network-request-failed': 'No se pudo conectar con Google. Revisa la conexión o desactiva temporalmente el bloqueador de anuncios.',
+          'auth/cancelled-popup-request': 'Se canceló la ventana anterior. Espera un momento y vuelve a intentarlo.',
+        };
+        setAuthError(`${friendlyMessage[errorCode] || 'No se pudo ingresar con Google.'} Código: ${errorCode}`);
       }
     } finally {
       setSignInLoading(false);
