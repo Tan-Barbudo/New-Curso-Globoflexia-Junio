@@ -21,6 +21,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import AccessStatus from './components/AccessStatus';
+import AdminUsersPanel from './components/AdminUsersPanel';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import { MODULES_DATA } from './data/courseData';
@@ -60,6 +61,10 @@ export default function App() {
   const [authError, setAuthError] = useState('');
   const [modules, setModules] = useState<LessonModule[]>(MODULES_DATA);
   const [comments, setComments] = useState<ForumComment[]>([]);
+  const [academyUsers, setAcademyUsers] = useState<AcademyUser[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [busyUserUid, setBusyUserUid] = useState('');
+  const [usersError, setUsersError] = useState('');
   const [stats, setStats] = useState<UserStats>({
     username: '',
     completedLessons: [],
@@ -203,6 +208,47 @@ export default function App() {
   }, [authUser, profile?.status]);
 
   useEffect(() => {
+    if (!authUser || profile?.status !== 'approved' || profile.role !== 'admin' || !db) {
+      setAcademyUsers([]);
+      setUsersLoading(false);
+      return;
+    }
+
+    setUsersLoading(true);
+    setUsersError('');
+    const unsubscribe = onSnapshot(
+      collection(db, 'users'),
+      (snapshot) => {
+        const nextUsers = snapshot.docs.map((userSnapshot) => {
+          const data = userSnapshot.data();
+          return {
+            uid: userSnapshot.id,
+            email: String(data.email || ''),
+            displayName: String(data.displayName || 'Alumno'),
+            photoURL: String(data.photoURL || ''),
+            status: data.status,
+            role: data.role,
+          } as AcademyUser;
+        });
+        nextUsers.sort((a, b) => {
+          if (a.status === 'pending' && b.status !== 'pending') return -1;
+          if (a.status !== 'pending' && b.status === 'pending') return 1;
+          return a.displayName.localeCompare(b.displayName, 'es');
+        });
+        setAcademyUsers(nextUsers);
+        setUsersLoading(false);
+      },
+      (error) => {
+        console.error('No se pudieron cargar los usuarios:', error);
+        setUsersError('No se pudieron cargar las solicitudes. Revisa las reglas de Firestore.');
+        setUsersLoading(false);
+      },
+    );
+
+    return unsubscribe;
+  }, [authUser, profile?.role, profile?.status]);
+
+  useEffect(() => {
     if (!authUser || profile?.status !== 'approved') return;
 
     const storageKey = `tb_stats_${authUser.uid}`;
@@ -328,6 +374,28 @@ export default function App() {
     setModules(updatedModules);
   };
 
+  const handleUpdateUserAccess = async (user: AcademyUser, status: AcademyUser['status']) => {
+    if (!authUser || profile?.status !== 'approved' || profile.role !== 'admin' || !db) return;
+    if (user.uid === authUser.uid) {
+      setUsersError('Tu cuenta administradora no puede bloquearse desde este panel.');
+      return;
+    }
+
+    setBusyUserUid(user.uid);
+    setUsersError('');
+    try {
+      await updateDoc(doc(db, 'users', user.uid), {
+        status,
+        updatedAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error('No se pudo actualizar el acceso:', error);
+      setUsersError('No se pudo guardar el cambio. Inténtalo nuevamente.');
+    } finally {
+      setBusyUserUid('');
+    }
+  };
+
   const allDocuments: DocumentAsset[] = [];
   const seenDocIds = new Set<string>();
   modules.forEach((module) => {
@@ -374,6 +442,7 @@ export default function App() {
   return (
     <div id="app-viewport-root">
       <Dashboard
+        currentUserProfile={profile}
         currentUser={profile.displayName}
         modulesData={modules}
         documentsList={allDocuments}
@@ -385,6 +454,16 @@ export default function App() {
         onAddReply={handleAddReply}
         onToggleCommentLike={handleToggleCommentLike}
         onUpdateModules={handleUpdateModules}
+        adminUsersPanel={(
+          <AdminUsersPanel
+            users={academyUsers}
+            currentUserUid={authUser.uid}
+            isLoading={usersLoading}
+            busyUserUid={busyUserUid}
+            error={usersError}
+            onUpdateAccess={handleUpdateUserAccess}
+          />
+        )}
       />
     </div>
   );
