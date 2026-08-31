@@ -179,10 +179,7 @@ export default function BalloonInflater() {
 
     const question = TRIVIA_QUESTIONS[currentQuestionIdx];
     if (optIdx === question.correctIdx) {
-      // Correct!
-      setScore(prev => prev + 1);
-      setTriviaPumps(prev => prev + 1);
-      setStreak(prev => prev + 1);
+      // Correct: keep the feedback intentionally simple and stable.
     } else {
       // Incorrect! A pops scenario or streak breakdown
       setStreak(0);
@@ -200,12 +197,6 @@ export default function BalloonInflater() {
     if (!isCorrect) {
       // If failed, balloon pops! Game over for this round
       setTriviaStatus('popped');
-      return;
-    }
-
-    // Check if we reached the end of standard round (e.g. 5 successful pumps)
-    if (triviaPumps >= 5) {
-      setTriviaStatus('won');
       return;
     }
 
@@ -317,43 +308,12 @@ export default function BalloonInflater() {
               {/* CURRENT PLAYING STATUS */}
               {triviaStatus === 'playing' && (
                 <div className="space-y-4" id="trivia-active-game">
-                  {/* Progress Indicator and Score */}
+                  {/* Simple question indicator */}
                   <div className="flex justify-between items-center bg-[#1A1A1A] p-2.5 rounded-xl border border-brand-beige/20 text-xs">
                     <span className="font-bold text-gray-300">
-                      Progreso del Inflado: <span className="text-brand-yellow">{triviaPumps} / 5 Bombazos Correctos</span>
+                      Pregunta <span className="text-brand-yellow">{currentQuestionIdx + 1} de {TRIVIA_QUESTIONS.length}</span>
                     </span>
-                    <div className="flex items-center gap-1">
-                      <Flame className="w-4 h-4 text-brand-red animate-pulse" />
-                      <span className="font-black text-brand-salmon">Racha: {streak}</span>
-                    </div>
-                  </div>
-
-                  {/* VISUAL MINI BALLOON - Inflates as we reply correctly! */}
-                  <div className="flex flex-col items-center justify-center py-3 bg-[#1A1A1A]/50 border border-brand-beige/10 rounded-xl relative overflow-hidden">
-                    <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-bold select-none">Presión en el Tubo:</div>
-                    
-                    {/* The balloon */}
-                    <div className="relative flex items-center justify-center min-h-[60px] w-full">
-                      <div
-                        style={{
-                          width: `${40 + triviaPumps * 35}px`,
-                          height: `${20 + triviaPumps * 4}px`,
-                          borderRadius: '20px',
-                        }}
-                        className="bg-brand-yellow border-2 border-brand-dark flex items-center justify-end relative shadow-lg"
-                      >
-                        {/* air bubble ring indicator */}
-                        <div className="w-2.5 h-full bg-white/20 rounded-l absolute left-2 top-0" />
-                        {/* knot tail */}
-                        <div className="w-3 h-2 bg-brand-yellow/80 rounded absolute right-0 transform translate-x-1 border-r border-[#1C1917]" />
-                      </div>
-                    </div>
-
-                    <p className="text-[11px] text-gray-400 mt-2">
-                      {triviaPumps === 0 && "🎈 El globo está vacío. ¡Contesta bien para bombear aire con prudencia!"}
-                      {triviaPumps > 0 && triviaPumps < 4 && "👍 ¡Buena presión! El aire se está expandiendo con solidez."}
-                      {triviaPumps >= 4 && "🔥 ¡Súper presión! Un solo paso más para amarrar tu figura legendaria."}
-                    </p>
+                    <span className="font-bold text-gray-500">Elige una respuesta</span>
                   </div>
 
                   {/* QUESTION CONTAINER */}
@@ -403,22 +363,28 @@ export default function BalloonInflater() {
                           role="status"
                           aria-live="polite"
                         >
-                          <div className="flex items-start gap-1.5 text-xs text-amber-500 bg-brand-yellow/5 p-2.5 rounded-lg border border-brand-yellow/20">
-                            <Lightbulb className="w-4.5 h-4.5 text-brand-yellow flex-shrink-0 mt-0.5" />
-                            <div className="space-y-1">
-                              <p className="font-bold text-white uppercase text-[10px]">Explicación de Tan Barbudo:</p>
-                              <p className="text-gray-300 leading-relaxed text-[11px]">
-                                {TRIVIA_QUESTIONS[currentQuestionIdx].explanation}
-                              </p>
+                          {selectedAnswerIdx === TRIVIA_QUESTIONS[currentQuestionIdx].correctIdx ? (
+                            <div className="flex items-center justify-center gap-2 text-sm text-brand-green bg-brand-green/10 p-3 rounded-lg border border-brand-green/30 font-bold">
+                              <CheckCircle2 className="w-5 h-5" /> Respuesta correcta
                             </div>
-                          </div>
+                          ) : (
+                            <div className="flex items-start gap-1.5 text-xs text-amber-500 bg-brand-yellow/5 p-2.5 rounded-lg border border-brand-yellow/20">
+                              <Lightbulb className="w-4.5 h-4.5 text-brand-yellow flex-shrink-0 mt-0.5" />
+                              <div className="space-y-1">
+                                <p className="font-bold text-white uppercase text-[10px]">Respuesta incorrecta</p>
+                                <p className="text-gray-300 leading-relaxed text-[11px]">
+                                  {TRIVIA_QUESTIONS[currentQuestionIdx].explanation}
+                                </p>
+                              </div>
+                            </div>
+                          )}
 
                           <button
                             onClick={handleNextTrivia}
                             className="w-full mt-2 cursor-pointer py-2 bg-brand-yellow text-brand-dark font-display font-medium text-xs uppercase tracking-wide rounded-xl border-2 border-brand-dark shadow-sm active:translate-y-0.5 flex items-center justify-center"
                           >
                             {selectedAnswerIdx === TRIVIA_QUESTIONS[currentQuestionIdx].correctIdx 
-                              ? "Siguiente Bombeo 💨" 
+                              ? "Siguiente pregunta"
                               : "Ver resultado del globo 💥"}
                           </button>
                         </div>
