@@ -24,6 +24,7 @@ export interface LessonModule {
 
 export interface ForumReply {
   id: string;
+  authorUid?: string;
   authorName: string;
   authorAvatar: string;
   authorRole: 'Alumno' | 'Profesor' | 'Admin';
@@ -33,6 +34,7 @@ export interface ForumReply {
 
 export interface ForumComment {
   id: string;
+  authorUid?: string;
   authorName: string;
   authorAvatar: string;
   authorRole: 'Alumno' | 'Profesor' | 'Admin';
@@ -49,4 +51,16 @@ export interface UserStats {
   completedLessons: string[]; // List of module ids
   favoriteLessons: string[]; // List of module ids
   joinedDate: string;
+}
+
+export type AccessStatus = 'pending' | 'approved' | 'rejected' | 'blocked';
+export type UserRole = 'student' | 'admin';
+
+export interface AcademyUser {
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL: string;
+  status: AccessStatus;
+  role: UserRole;
 }
