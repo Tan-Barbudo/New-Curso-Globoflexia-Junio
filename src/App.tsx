@@ -249,27 +249,56 @@ export default function App() {
   }, [authUser, profile?.role, profile?.status]);
 
   useEffect(() => {
-    if (!authUser || profile?.status !== 'approved') return;
+    if (!authUser || profile?.status !== 'approved' || !db) return;
 
     const storageKey = `tb_stats_${authUser.uid}`;
-    const savedStats = localStorage.getItem(storageKey);
-    if (savedStats) {
-      try {
-        setStats(JSON.parse(savedStats));
-        return;
-      } catch {
-        localStorage.removeItem(storageKey);
-      }
-    }
-
     const initialStats: UserStats = {
       username: profile.displayName,
       completedLessons: [],
       favoriteLessons: [],
       joinedDate: new Date().toLocaleDateString('es-AR'),
     };
-    setStats(initialStats);
-    localStorage.setItem(storageKey, JSON.stringify(initialStats));
+    const savedStats = localStorage.getItem(storageKey);
+    if (savedStats) {
+      try {
+        Object.assign(initialStats, JSON.parse(savedStats));
+      } catch {
+        localStorage.removeItem(storageKey);
+      }
+    }
+
+    const progressRef = doc(db, 'progress', authUser.uid);
+    const unsubscribe = onSnapshot(
+      progressRef,
+      (snapshot) => {
+        if (!snapshot.exists()) {
+          setStats(initialStats);
+          localStorage.setItem(storageKey, JSON.stringify(initialStats));
+          void setDoc(progressRef, { ...initialStats, updatedAt: serverTimestamp() });
+          return;
+        }
+
+        const data = snapshot.data();
+        const syncedStats: UserStats = {
+          username: String(data.username || profile.displayName),
+          completedLessons: Array.isArray(data.completedLessons)
+            ? data.completedLessons.filter((id) => typeof id === 'string')
+            : [],
+          favoriteLessons: Array.isArray(data.favoriteLessons)
+            ? data.favoriteLessons.filter((id) => typeof id === 'string')
+            : [],
+          joinedDate: String(data.joinedDate || initialStats.joinedDate),
+        };
+        setStats(syncedStats);
+        localStorage.setItem(storageKey, JSON.stringify(syncedStats));
+      },
+      (error) => {
+        console.error('No se pudo sincronizar el progreso:', error);
+        setStats(initialStats);
+      },
+    );
+
+    return unsubscribe;
   }, [authUser, profile]);
 
   const handleGoogleSignIn = async () => {
@@ -304,8 +333,8 @@ export default function App() {
     setComments([]);
   };
 
-  const handleToggleComplete = (moduleId: string) => {
-    if (!authUser || profile?.status !== 'approved') return;
+  const handleToggleComplete = async (moduleId: string) => {
+    if (!authUser || profile?.status !== 'approved' || !db) return;
 
     const completedLessons = stats.completedLessons.includes(moduleId)
       ? stats.completedLessons.filter((id) => id !== moduleId)
@@ -313,6 +342,15 @@ export default function App() {
     const updatedStats = { ...stats, completedLessons };
     setStats(updatedStats);
     localStorage.setItem(`tb_stats_${authUser.uid}`, JSON.stringify(updatedStats));
+    try {
+      await setDoc(
+        doc(db, 'progress', authUser.uid),
+        { ...updatedStats, updatedAt: serverTimestamp() },
+        { merge: true },
+      );
+    } catch (error) {
+      console.error('No se pudo guardar el progreso:', error);
+    }
   };
 
   const handleAddComment = async (
