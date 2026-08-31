@@ -12,7 +12,6 @@ import {
   CheckCircle,
   X,
   Lock,
-  Flame,
   Compass,
   Heart,
   Activity,
@@ -57,34 +56,36 @@ export default function Dashboard({
   adminUsersPanel,
 }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<'video' | 'forum' | 'game' | 'users'>('video');
-  const [selectedModuleId, setSelectedModuleId] = useState<string>('mod-1');
+  const [selectedModuleId, setSelectedModuleId] = useState<string>('intro');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const regularModules = modulesData.filter((m) => !m.isBonus);
   const bonusModules = modulesData.filter((m) => m.isBonus);
   const activeModule = modulesData.find((m) => m.id === selectedModuleId) || modulesData[0];
 
-  const COURSE_START_DATE = new Date('2026-06-22T00:00:00');
-  const now = new Date();
-  const weekMs = 7 * 24 * 60 * 60 * 1000;
-  const weeksElapsed = Math.max(0, Math.floor((now.getTime() - COURSE_START_DATE.getTime()) / weekMs));
-  const currentUnlockedWeek = weeksElapsed + 1;
-
-  const getModuleUnlockWeek = (module: LessonModule) => {
-    if (!module.isBonus) return module.order;
-
-    const bonusIndex = bonusModules.findIndex((b) => b.id === module.id);
-    return regularModules.length + bonusIndex + 1;
-  };
-
+  const availableModules = modulesData.filter((module) => Boolean(module.videoUrl));
+  const availableModuleIds = new Set(availableModules.map((module) => module.id));
   const isModuleUnlocked = (module: LessonModule) => {
     if (currentUserProfile.role === 'admin') return true;
-    return getModuleUnlockWeek(module) <= currentUnlockedWeek;
+    if (!module.videoUrl) return false;
+
+    const moduleIndex = availableModules.findIndex((availableModule) => availableModule.id === module.id);
+    if (moduleIndex <= 0) return moduleIndex === 0;
+
+    return userStats.completedLessons.includes(availableModules[moduleIndex - 1].id);
   };
 
-  const totalLessonsCount = modulesData.length;
-  const completedCount = userStats.completedLessons.length;
+  const totalLessonsCount = availableModules.length;
+  const completedCount = userStats.completedLessons.filter((moduleId) => availableModuleIds.has(moduleId)).length;
   const progressPercent = Math.round((completedCount / totalLessonsCount) * 100);
+  const nextModule = availableModules.find((module) => !userStats.completedLessons.includes(module.id));
+  const nextStepLabel = !nextModule
+    ? '¡Recorrido completado!'
+    : nextModule.order === 0
+      ? 'Comienza con la Introducción'
+      : nextModule.isBonus
+        ? `Continúa con el Bonus ${bonusModules.findIndex((bonus) => bonus.id === nextModule.id) + 1}`
+        : `Continúa con el Módulo ${nextModule.order}`;
 
   const getLevelRank = (count: number) => {
     if (count === 0) return 'Globo Recluta 🍼';
@@ -95,7 +96,6 @@ export default function Dashboard({
     return 'Campeón Celestial del Látex 🏆';
   };
 
-  const nextLockedModule = modulesData.find((m) => !isModuleUnlocked(m));
   const activeModuleLocked = activeModule ? !isModuleUnlocked(activeModule) : false;
 
   const renderModuleButton = (m: LessonModule, isBonus = false) => {
@@ -295,16 +295,16 @@ export default function Dashboard({
             </div>
 
             <div className="md:col-span-1 flex items-center gap-4 border-b md:border-b-0 md:border-r border-dashed border-gray-200 pb-4 md:pb-0 md:pr-4">
-              <div className="w-12 h-12 bg-brand-red/15 rounded-2xl border-2 border-brand-dark flex items-center justify-center text-xl text-brand-red flex-shrink-0">
-                <Flame className="w-6 h-6 animate-pulse" />
+              <div className="w-12 h-12 bg-brand-yellow/15 rounded-2xl border-2 border-brand-yellow/40 flex items-center justify-center text-xl text-brand-yellow flex-shrink-0">
+                <BookOpen className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="font-display font-bold text-xs uppercase tracking-wide text-gray-400">Esta Semana</h4>
+                <h4 className="font-display font-bold text-xs uppercase tracking-wide text-gray-400">Tu Próximo Paso</h4>
                 <p className="text-sm font-black text-brand-dark mt-0.5">
-                  Disponible: Módulo {Math.min(currentUnlockedWeek, regularModules.length)}
+                  {nextStepLabel}
                 </p>
                 <p className="text-[10px] text-gray-500">
-                  {nextLockedModule ? `Próximo: Módulo ${getModuleUnlockWeek(nextLockedModule)}` : 'Todo el curso disponible 🎉'}
+                  Completa cada clase para desbloquear la siguiente 🎈
                 </p>
               </div>
             </div>
@@ -393,7 +393,7 @@ export default function Dashboard({
                         Clase bloqueada
                       </h2>
                       <p className="text-gray-500 font-bold mt-2">
-                        Este contenido estará disponible en la semana {getModuleUnlockWeek(activeModule)} del curso.
+                        Completa la clase anterior para desbloquear este contenido.
                       </p>
                       <p className="text-xs text-gray-400 mt-3">
                         Sigue avanzando paso a paso. La consistencia también se entrena. 🎈
