@@ -164,12 +164,12 @@ export default function ForumTab({ comments, currentUser, onAddComment, onAddRep
           </form>
 
           {/* Guidelines info card */}
-          <div className="bg-[#FFF4E6] border-2 border-brand-yellow rounded-2xl p-4 flex gap-3 text-xs text-brand-dark">
-            <AlertCircle className="w-5 h-5 flex-shrink-0 text-brand-yellow" />
+          <div className="bg-brand-blue/10 border-2 border-brand-blue/30 rounded-2xl p-4 flex gap-3 text-xs text-brand-dark">
+            <AlertCircle className="w-5 h-5 flex-shrink-0 text-brand-blue" />
             <div>
-              <p className="font-bold">Reglas del Foro Tan Barbudo:</p>
+              <p className="font-bold">Aprendemos juntos 🎈</p>
               <p className="mt-0.5 text-gray-600 leading-normal">
-                Nuestros facilitadores y el Profe Gustavo leen el foro a diario. Si tienes problemas técnicos de globos que se revientan, ¡asegúrate de etiquetar tu duda como <span className="font-bold text-brand-red">#Duda</span>!
+                Este espacio lo construimos entre todos. Tu pregunta puede ayudar a alguien que tiene la misma duda, y tu avance puede motivar a otro a seguir practicando. Comparte, pregunta y celebra: aprendemos mejor cuando aprendemos juntos.
               </p>
             </div>
           </div>
