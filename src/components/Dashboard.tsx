@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LessonModule, ForumComment, UserStats, DocumentAsset } from '../types';
+import { LessonModule, ForumComment, UserStats, DocumentAsset, AcademyUser } from '../types';
 import {
   LogOut,
   Menu,
@@ -20,6 +20,7 @@ import {
   Instagram,
   Youtube,
   Facebook,
+  Users,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import VideoPlayer from './VideoPlayer';
@@ -27,6 +28,7 @@ import ForumTab from './ForumTab';
 import BalloonInflater from './BalloonInflater';
 
 interface DashboardProps {
+  currentUserProfile: AcademyUser;
   currentUser: string;
   modulesData: LessonModule[];
   documentsList: DocumentAsset[];
@@ -38,9 +40,11 @@ interface DashboardProps {
   onAddReply: (commentId: string, content: string) => void;
   onToggleCommentLike: (commentId: string) => void;
   onUpdateModules: (updatedModules: LessonModule[]) => void;
+  adminUsersPanel: React.ReactNode;
 }
 
 export default function Dashboard({
+  currentUserProfile,
   currentUser,
   modulesData,
   forumComments,
@@ -50,8 +54,9 @@ export default function Dashboard({
   onAddComment,
   onAddReply,
   onToggleCommentLike,
+  adminUsersPanel,
 }: DashboardProps) {
-  const [activeTab, setActiveTab] = useState<'video' | 'forum' | 'game'>('video');
+  const [activeTab, setActiveTab] = useState<'video' | 'forum' | 'game' | 'users'>('video');
   const [selectedModuleId, setSelectedModuleId] = useState<string>('mod-1');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -352,6 +357,21 @@ export default function Dashboard({
               <Activity className="w-4.5 h-4.5 text-brand-green" />
               <span>Doblado Virtual 🎈</span>
             </button>
+
+            {currentUserProfile.role === 'admin' && (
+              <button
+                onClick={() => setActiveTab('users')}
+                id="tab-users-button"
+                className={`cursor-pointer px-4 py-3 rounded-t-2xl font-display font-bold text-xs md:text-sm uppercase tracking-wider flex items-center gap-2 border-t-3 border-x-3 transition-all ${
+                  activeTab === 'users'
+                    ? 'bg-white border-brand-dark text-brand-dark translate-y-[3px]'
+                    : 'bg-transparent border-transparent text-gray-500 hover:text-brand-dark'
+                }`}
+              >
+                <Users className="w-4.5 h-4.5 text-brand-blue" />
+                <span>Solicitudes</span>
+              </button>
+            )}
           </div>
 
           <div className="pt-2" id="rendered-tab-view">
@@ -413,6 +433,17 @@ export default function Dashboard({
                   className="max-w-xl mx-auto"
                 >
                   <BalloonInflater />
+                </motion.div>
+              )}
+
+              {activeTab === 'users' && currentUserProfile.role === 'admin' && (
+                <motion.div
+                  key="users"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {adminUsersPanel}
                 </motion.div>
               )}
             </AnimatePresence>
