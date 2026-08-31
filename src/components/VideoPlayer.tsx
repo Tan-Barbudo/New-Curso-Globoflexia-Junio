@@ -26,8 +26,8 @@ export default function VideoPlayer({ module, isCompleted, onToggleComplete, onN
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center text-white bg-gradient-to-br from-brand-dark to-brand-dark/95 p-6 text-center">
             <Play className="w-16 h-16 text-brand-yellow animate-pulse mb-4" />
-            <p className="text-lg font-bold">Simulador de Video - Tan Barbudo</p>
-            <p className="text-xs text-gray-400 mt-1 max-w-sm">No pudimos cargar la transmisión. Puedes ver la información detallada abajo o cambiar de clase.</p>
+            <p className="text-lg font-bold">Próximamente</p>
+            <p className="text-xs text-gray-400 mt-1 max-w-sm">Este bonus todavía está en preparación. El video aparecerá aquí cuando esté disponible.</p>
           </div>
         )}
       </div>
@@ -39,7 +39,7 @@ export default function VideoPlayer({ module, isCompleted, onToggleComplete, onN
             <span className={`px-3 py-1 text-xs font-bold rounded-full border-2 border-brand-dark ${
               module.isBonus ? 'bg-brand-salmon text-brand-dark' : 'bg-brand-blue text-brand-dark'
             }`}>
-              {module.isBonus ? '¡REGALO BONUS!' : `MÓDULO ${module.order}`}
+              {module.isBonus ? '¡REGALO BONUS!' : module.order === 0 ? 'INTRODUCCIÓN' : `MÓDULO ${module.order}`}
             </span>
             <span className="px-3 py-1 bg-brand-beige border-2 border-brand-dark text-[11px] font-bold text-gray-700 rounded-full flex items-center gap-1">
               <Clock className="w-3 h-3 text-brand-yellow" />
