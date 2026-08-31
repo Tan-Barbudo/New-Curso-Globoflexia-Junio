@@ -1,6 +1,6 @@
 import React from 'react';
 import { LessonModule } from '../types';
-import { Play, CheckCircle2, Clock, Award, FileText, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
+import { Play, CheckCircle2, Clock, Award, FileText, ArrowRight, Sparkles, AlertCircle, MessageCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface VideoPlayerProps {
@@ -11,6 +11,8 @@ interface VideoPlayerProps {
 }
 
 export default function VideoPlayer({ module, isCompleted, onToggleComplete, onNavigateToDocs }: VideoPlayerProps) {
+  const canRequestCertificate = module.id === 'bonus-4' && Boolean(module.videoUrl) && isCompleted;
+
   return (
     <div className="space-y-6" id="video-theater-layout">
       {/* Dynamic Main Video Screen Block */}
@@ -76,6 +78,29 @@ export default function VideoPlayer({ module, isCompleted, onToggleComplete, onN
         <p className="text-gray-600 text-sm md:text-base leading-relaxed mt-3">
           {module.description}
         </p>
+
+        {canRequestCertificate && (
+          <div className="mt-6 p-5 bg-brand-green/10 border-2 border-brand-green rounded-2xl text-center space-y-3">
+            <div className="text-4xl" aria-hidden="true">🎓</div>
+            <div>
+              <h3 className="font-display font-bold text-lg text-brand-dark uppercase">
+                ¡Felicitaciones! Completaste el curso
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Escríbenos por WhatsApp indicando que terminaste el curso y el nombre completo que deseas en tu certificado.
+              </p>
+            </div>
+            <a
+              href="https://wa.me/message/4KJH22ULJCVYH1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#25D366] hover:bg-[#20bd5a] text-white font-display font-bold text-sm uppercase rounded-xl border-2 border-brand-dark sticker-shadow-sm transition-all active:translate-y-0.5"
+            >
+              <MessageCircle className="w-5 h-5" />
+              Solicitar mi certificado por WhatsApp
+            </a>
+          </div>
+        )}
 
         {/* Interactive Learn list */}
         <div className="mt-8">
