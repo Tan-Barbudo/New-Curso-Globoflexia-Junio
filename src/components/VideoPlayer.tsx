@@ -124,12 +124,14 @@ export default function VideoPlayer({ module, isCompleted, onToggleComplete, onN
                       <p className="text-[10px] text-gray-400">{doc.size} • Material Oficial de Tan Barbudo</p>
                     </div>
                   </div>
-                  <button
-                    onClick={onNavigateToDocs}
+                  <a
+                    href={doc.downloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="p-2 hover:bg-brand-beige/50 text-brand-dark rounded-lg border border-brand-dark/10 text-xs font-bold"
                   >
-                    Ver Guía 📑
-                  </button>
+                    {doc.format === 'CANVA' ? 'Editar plantilla ↗' : 'Descargar ↓'}
+                  </a>
                 </div>
               ))}
             </div>
