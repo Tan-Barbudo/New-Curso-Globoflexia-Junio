@@ -3,15 +3,11 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Sparkles, 
   RefreshCw, 
-  HelpCircle, 
   CheckCircle2, 
-  XCircle, 
   Award, 
-  Flame, 
-  Trophy, 
-  BookOpen, 
   Lightbulb,
-  Heart
+  Heart,
+  ExternalLink
 } from 'lucide-react';
 
 interface Question {
@@ -120,8 +116,32 @@ const GRADUATION_FIGURES = [
   { name: 'Súper Loro Escénico 🦜', emoji: '🦜🌴', text: '¡Listo para posarse en tu cabeza en el teatro cómico de la risa!' }
 ];
 
+const TUTORIALS = [
+  { name: 'Serpiente', url: 'https://youtube.com/shorts/IHlMd2KkE5Y?feature=share' },
+  { name: 'Cangrejo', url: 'https://youtube.com/shorts/ItfPu3jZ25g?feature=share' },
+  { name: 'Perro', url: 'https://youtube.com/shorts/7Ay4HbAYWbI?feature=share' },
+  { name: 'Pulpo', url: 'https://youtube.com/shorts/oQc3BjYo0-o?feature=share' },
+  { name: 'Cruz', url: 'https://youtube.com/shorts/qQ6zrk8GADk?feature=share' },
+  { name: 'Ratón volador', url: 'https://youtube.com/shorts/W83CIGJfk7o?feature=share' },
+  { name: 'Gato', url: 'https://youtube.com/shorts/y8EiwTbj3ow?feature=share' },
+  { name: 'Conejo', url: 'https://youtube.com/shorts/Z9rCt_X0kTc?feature=share' },
+  { name: 'Dinosaurio', url: 'https://youtube.com/shorts/iKBwsdc7aEU?feature=share' },
+  { name: 'Pony', url: 'https://youtube.com/shorts/_j2SJgQOEB0?feature=share' },
+  { name: 'Corazón', url: 'https://youtube.com/shorts/7faPIOkhalo?feature=share' },
+  { name: 'Flor', url: 'https://youtube.com/shorts/jkDQqBiI8lU?feature=share' },
+  { name: 'Estrella o copo de nieve', url: 'https://youtube.com/shorts/KYHJv1DNMoU?feature=share' },
+  { name: 'Flor de pulsera', url: 'https://youtube.com/shorts/UjuvTMRMJL8?feature=share' },
+  { name: 'Perro con retazos de globo', url: 'https://youtube.com/shorts/igi1ZJWvbKc?feature=share' },
+  { name: 'Oso', url: 'https://youtube.com/shorts/ujmuGc46E1E?feature=share' },
+  { name: 'Uvas', url: 'https://youtube.com/shorts/Y0VCbVJNI8M?feature=share' },
+  { name: 'Truco de burbuja con globos', url: 'https://youtube.com/shorts/xQDj5LmXqQc?si=jFxCO9DcMSl9QpWU' },
+  { name: 'Spider-Man chibi', url: 'https://youtube.com/shorts/NuAqI39cO8U?si=LRUfy_dkds6VZruC' },
+  { name: 'Monito', url: 'https://youtube.com/shorts/YAaI4l_qYNk?feature=share' },
+  { name: 'Rifle', url: 'https://youtube.com/shorts/VtczR6Izqxw?feature=share' },
+];
+
 export default function BalloonInflater() {
-  const [activeMode, setActiveMode] = useState<'trivia' | 'free'>('trivia');
+  const [activeMode, setActiveMode] = useState<'trivia' | 'tutorials'>('trivia');
 
   // TRIVIA MODE STATE
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
@@ -133,35 +153,6 @@ export default function BalloonInflater() {
   const [streak, setStreak] = useState(0);
   const [randomGraduation, setRandomGraduation] = useState<{name: string, emoji: string, text: string} | null>(null);
 
-  // FREE PLAY STATE
-  const [freePumpCount, setFreePumpCount] = useState(0);
-  const [freeColor, setFreeColor] = useState('bg-brand-red');
-  const [freeColorName, setFreeColorName] = useState('Rojo Fuego');
-  const [freeStatus, setFreeStatus] = useState<'idle' | 'inflating' | 'popped' | 'completed'>('idle');
-  const [freeCreatedFigure, setFreeCreatedFigure] = useState<string | null>(null);
-  const [freeJoke, setFreeJoke] = useState('');
-
-  const freeColorsList = [
-    { bg: 'bg-brand-red', name: 'Rojo Fuego' },
-    { bg: 'bg-brand-yellow', name: 'Amarillo Tan Barbudo' },
-    { bg: 'bg-brand-green', name: 'Verde Éxito' },
-    { bg: 'bg-brand-blue', name: 'Azul Fiesta' },
-    { bg: 'bg-brand-salmon', name: 'Naranja Cómico' },
-  ];
-
-  const freeFiguresList = [
-    { name: 'Perrito Clásico 🐶', img: '🐾' },
-    { name: 'Espada del Caballero ⚔️', img: '✨' },
-    { name: 'Loro del Pirata 🦜', img: '🌴' },
-    { name: 'Flor Multicolores 🌸', img: '💚' },
-  ];
-
-  const freeJokesList = [
-    "¡Vaya, ese globo se asustó de tu gran sonrisa! 😄",
-    "¡BOOM! El látex quería ser confeti... ¡Meta cumplida! 🎉",
-    "¡Ouch! El globo aplaudió con demasiada emoción por tu show. 👏",
-    "¡Pfff! Se marchó volando a buscar al Profe Gustavo. 🎈"
-  ];
 
   // Pick a random graduation figure once when winning trivia
   useEffect(() => {
@@ -220,45 +211,20 @@ export default function BalloonInflater() {
     setRandomGraduation(null);
   };
 
-  // FREE PUMP ACTIONS
-  const handleFreePump = () => {
-    if (freeStatus === 'popped' || freeStatus === 'completed') return;
-    setFreeStatus('inflating');
-    const nextCount = freePumpCount + 1;
-    setFreePumpCount(nextCount);
-
-    if (nextCount > 5) {
-      setFreeStatus('popped');
-      setFreeJoke(freeJokesList[Math.floor(Math.random() * freeJokesList.length)]);
-    }
-  };
-
-  const handleFreeTwist = (img: string, name: string) => {
-    if (freePumpCount < 2) return;
-    setFreeStatus('completed');
-    setFreeCreatedFigure(`${img} ${name}`);
-  };
-
-  const resetFreeGame = () => {
-    setFreePumpCount(0);
-    setFreeStatus('idle');
-    setFreeCreatedFigure(null);
-  };
-
   return (
     <div className="bg-[#1A1A1A] border-4 border-brand-dark rounded-3xl p-5 md:p-6 sticker-shadow relative overflow-hidden" id="virtual-game-section">
       {/* Decorative tag */}
       <div className="absolute top-3 right-3 bg-brand-yellow text-[#1C1917] px-3 py-1 rounded-full text-[10px] uppercase font-black border-2 border-brand-dark tracking-normal transform rotate-3 animate-pulse">
-        PRÁCTICA Y TRIVIA
+        TRIVIA Y TUTORIALES
       </div>
 
       <div className="mb-4">
         <h3 className="font-display font-medium text-lg leading-tight text-white flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-brand-salmon animate-bounce" />
-          Doblado Virtual y Reta Barbuda 🎈
+          Practica y sigue creando 🎈
         </h3>
         <p className="text-xs text-gray-400 mt-1">
-          Aprende las técnicas, apréndete el temario ¡y modela globos sin gastar un solo céntimo de látex!
+          Pon a prueba lo aprendido o practica una nueva figura con estos tutoriales.
         </p>
       </div>
 
@@ -278,17 +244,14 @@ export default function BalloonInflater() {
           🏆 Trivia con Reta de Aire
         </button>
         <button
-          onClick={() => {
-            setActiveMode('free');
-            resetFreeGame();
-          }}
+          onClick={() => setActiveMode('tutorials')}
           className={`cursor-pointer flex-1 py-2 text-xs font-display font-bold uppercase rounded-lg transition-all ${
-            activeMode === 'free'
+            activeMode === 'tutorials'
               ? 'bg-brand-yellow text-brand-dark shadow-md'
               : 'text-gray-400 hover:text-white'
           }`}
         >
-          ⚙️ Práctica de Inflado Libre
+          🎈 Tutoriales
         </button>
       </div>
 
@@ -478,156 +441,42 @@ export default function BalloonInflater() {
             </motion.div>
           )}
 
-          {/* 2. FREE PLAY MODE SCENARIOS */}
-          {activeMode === 'free' && (
+          {/* 2. TUTORIALS */}
+          {activeMode === 'tutorials' && (
             <motion.div
-              key="free-block"
+              key="tutorials-block"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="space-y-4 text-center"
+              className="space-y-3"
             >
-              {freeStatus === 'idle' && (
-                <div className="py-8 space-y-3">
-                  <div className="text-5xl animate-pulse">🎈</div>
-                  <p className="text-xs font-bold text-gray-300">Paso 1: ¡Elige tu color de látex favorito abajo!</p>
-                  <p className="text-[11px] text-gray-400">Y usa el botón "BOMBEAR AIRE" para inflarlo poco a poco.</p>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h4 className="text-sm font-bold text-white">Tutoriales</h4>
+                  <p className="text-[11px] text-gray-400">Practica una figura y sigue mejorando.</p>
                 </div>
-              )}
+                <span className="text-[10px] text-brand-yellow font-bold whitespace-nowrap">
+                  {TUTORIALS.length} figuras
+                </span>
+              </div>
 
-              {freeStatus === 'inflating' && (
-                <div className="flex flex-col items-center py-4">
-                  {/* Elastic tube representing inflation scale */}
-                  <div className="text-[10px] text-gray-505 uppercase tracking-widest mb-3 font-bold">Tubo de Látex:</div>
-                  <div
-                    style={{
-                      width: `${45 + freePumpCount * 30}px`,
-                      height: `${18 + freePumpCount * 3}px`,
-                      borderRadius: '25px',
-                    }}
-                    className={`${freeColor} border-2 border-brand-dark relative flex items-center justify-end pr-1 shadow-lg`}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-[260px] overflow-y-auto pr-1">
+                {TUTORIALS.map((tutorial) => (
+                  <a
+                    key={tutorial.url}
+                    href={tutorial.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-between gap-2 px-3 py-2.5 bg-[#1A1A1A] hover:bg-brand-yellow/10 border border-brand-beige/20 hover:border-brand-yellow/60 rounded-lg text-xs text-gray-200 hover:text-white transition-all"
+                    aria-label={"Ver tutorial de " + tutorial.name + " en YouTube"}
                   >
-                    {/* Air ring indicator */}
-                    <div className="w-2.5 h-full bg-white/20 rounded-l absolute left-2 top-0" />
-                    {/* Tiny tie block */}
-                    <div className="w-2.5 h-1.5 bg-brand-dark/25 rounded absolute right-0 transform translate-x-1" />
-                  </div>
-
-                  <p className="text-xs font-bold text-white mt-4 uppercase">
-                    Inflado: <span className="text-brand-yellow">{freePumpCount * 20}% ({freePumpCount} bombazos)</span>
-                  </p>
-                  
-                  {freePumpCount < 2 ? (
-                    <p className="text-[10.5px] text-gray-400 mt-1">Insuficiente para doblar una figura. ¡Bombea un poco más!</p>
-                  ) : freePumpCount > 4 ? (
-                    <p className="text-[10.5px] text-brand-red font-bold animate-pulse mt-1">¡CUIDADO! Estás rozando los límites de tensión del látex virtual.</p>
-                  ) : (
-                    <p className="text-[10.5px] text-brand-green font-bold mt-1">¡Presión espectacular! Elige una figura barbudita para modelarla abajo.</p>
-                  )}
-                </div>
-              )}
-
-              {freeStatus === 'popped' && (
-                <div className="py-6 space-y-3">
-                  <div className="text-5xl animate-bounce">💥 BUM 💥</div>
-                  <p className="text-xs font-bold text-brand-red max-w-xs mx-auto leading-relaxed">{freeJoke}</p>
-                  <button
-                    onClick={resetFreeGame}
-                    className="mt-3 cursor-pointer px-4 py-2 bg-brand-red text-white text-xs font-bold rounded-xl border-2 border-brand-dark shadow-sm flex items-center gap-1 mx-auto active:translate-y-0.5"
-                  >
-                    <RefreshCw className="w-3.5 h-3.5" /> Tomar Otro Globo
-                  </button>
-                </div>
-              )}
-
-              {freeStatus === 'completed' && (
-                <div className="py-6 space-y-4">
-                  <div className="inline-block p-4 bg-brand-green/20 border-3 border-brand-green rounded-full">
-                    <span className="text-5xl block animate-pulse">
-                      {freeCreatedFigure?.split(' ')[0]}
-                    </span>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-white uppercase tracking-wider">{freeCreatedFigure}</h4>
-                    <p className="text-xs text-gray-400 italic">¡Felicidades! Has modelado un globo virtual sin ruidos estruendosos.</p>
-                  </div>
-                  <button
-                    onClick={resetFreeGame}
-                    className="cursor-pointer px-4 py-2 bg-brand-green text-white text-xs font-bold rounded-xl border-2 border-brand-dark shadow-sm flex items-center gap-1.5 mx-auto active:translate-y-0.5"
-                  >
-                    <RefreshCw className="w-3.5 h-3.5" /> Volver a Modelar
-                  </button>
-                </div>
-              )}
-
-              {/* COLORS SELECTOR FOR FREE MODE */}
-              {(freeStatus === 'idle' || freeStatus === 'inflating') && (
-                <div className="space-y-4 pt-3 border-t border-brand-beige/15 text-start">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-bold text-gray-400">Color Seleccionado:</span>
-                    <span className="font-bold text-white">{freeColorName}</span>
-                  </div>
-
-                  <div className="flex gap-2.5">
-                    {freeColorsList.map((c, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          setFreeColor(c.bg);
-                          setFreeColorName(c.name);
-                        }}
-                        disabled={freeStatus === 'inflating' && freePumpCount > 0}
-                        className={`w-7 h-7 rounded-full border-2 border-brand-dark cursor-pointer transition-transform ${c.bg} ${
-                          freeColor === c.bg ? 'scale-125 ring-2 ring-brand-blue' : 'hover:scale-110'
-                        } disabled:opacity-55 disabled:cursor-not-allowed`}
-                      />
-                    ))}
-                  </div>
-
-                  {/* ACTION TRIGGER PUMPS */}
-                  <div className="grid grid-cols-2 gap-3 pt-1">
-                    <button
-                      onClick={handleFreePump}
-                      disabled={freeStatus === 'popped' || freeStatus === 'completed'}
-                      className="cursor-pointer py-2.5 bg-brand-yellow hover:bg-brand-yellow/90 text-brand-dark font-display font-bold text-xs uppercase tracking-wider rounded-xl border-2 border-brand-dark shadow-sm active:translate-y-0.5"
-                    >
-                      💨 Bombear Aire
-                    </button>
-                    <button
-                      disabled={freePumpCount < 2 || freeStatus === 'popped' || freeStatus === 'completed'}
-                      className="cursor-pointer py-2.5 bg-brand-green hover:bg-brand-green/90 text-white font-display font-semibold text-xs uppercase tracking-wider rounded-xl border-2 border-brand-dark shadow-sm active:translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600 disabled:border-zinc-900"
-                      onClick={() => {
-                        const randomFig = freeFiguresList[Math.floor(Math.random() * freeFiguresList.length)];
-                        handleFreeTwist(randomFig.img, randomFig.name);
-                      }}
-                    >
-                      🛠️ Torsión Rápida
-                    </button>
-                  </div>
-
-                  {/* MINI DIRECT SELECTION IF SUFFICIENTLY INFLATED */}
-                  {freeStatus === 'inflating' && freePumpCount >= 2 && (
-                    <div className="pt-2 animate-fade-in">
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Esculpe una figura directa:</p>
-                      <div className="grid grid-cols-3 gap-1.5">
-                        {freeFiguresList.map((fig, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => handleFreeTwist(fig.img, fig.name)}
-                            className="cursor-pointer p-1.5 bg-brand-beige/25 hover:bg-brand-yellow/15 text-center text-[10.5px] font-bold text-white rounded-lg border border-brand-dark/20 flex flex-col items-center justify-center gap-1"
-                          >
-                            <span className="text-lg">{fig.img}</span>
-                            <span className="truncate w-full block text-[9.5px]">{fig.name.split(' ')[0]}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
+                    <span className="truncate">🎈 {tutorial.name}</span>
+                    <ExternalLink className="w-3.5 h-3.5 flex-shrink-0 text-gray-500 group-hover:text-brand-yellow" />
+                  </a>
+                ))}
+              </div>
             </motion.div>
           )}
-
         </AnimatePresence>
       </div>
 
