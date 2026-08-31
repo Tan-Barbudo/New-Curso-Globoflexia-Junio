@@ -334,20 +334,19 @@ export default function BalloonInflater() {
                     
                     {/* The balloon */}
                     <div className="relative flex items-center justify-center min-h-[60px] w-full">
-                      <motion.div
-                        animate={{
-                          width: 40 + triviaPumps * 35,
-                          height: 20 + triviaPumps * 4,
+                      <div
+                        style={{
+                          width: `${40 + triviaPumps * 35}px`,
+                          height: `${20 + triviaPumps * 4}px`,
                           borderRadius: '20px',
                         }}
-                        transition={{ type: 'spring', stiffness: 120, damping: 9 }}
                         className="bg-brand-yellow border-2 border-brand-dark flex items-center justify-end relative shadow-lg"
                       >
                         {/* air bubble ring indicator */}
                         <div className="w-2.5 h-full bg-white/20 rounded-l absolute left-2 top-0" />
                         {/* knot tail */}
                         <div className="w-3 h-2 bg-brand-yellow/80 rounded absolute right-0 transform translate-x-1 border-r border-[#1C1917]" />
-                      </motion.div>
+                      </div>
                     </div>
 
                     <p className="text-[11px] text-gray-400 mt-2">
@@ -534,20 +533,19 @@ export default function BalloonInflater() {
                 <div className="flex flex-col items-center py-4">
                   {/* Elastic tube representing inflation scale */}
                   <div className="text-[10px] text-gray-505 uppercase tracking-widest mb-3 font-bold">Tubo de Látex:</div>
-                  <motion.div
-                    animate={{
-                      width: 45 + freePumpCount * 30,
-                      height: 18 + freePumpCount * 3,
+                  <div
+                    style={{
+                      width: `${45 + freePumpCount * 30}px`,
+                      height: `${18 + freePumpCount * 3}px`,
                       borderRadius: '25px',
                     }}
-                    transition={{ type: 'spring', stiffness: 180, damping: 9 }}
                     className={`${freeColor} border-2 border-brand-dark relative flex items-center justify-end pr-1 shadow-lg`}
                   >
                     {/* Air ring indicator */}
                     <div className="w-2.5 h-full bg-white/20 rounded-l absolute left-2 top-0" />
                     {/* Tiny tie block */}
                     <div className="w-2.5 h-1.5 bg-brand-dark/25 rounded absolute right-0 transform translate-x-1" />
-                  </motion.div>
+                  </div>
 
                   <p className="text-xs font-bold text-white mt-4 uppercase">
                     Inflado: <span className="text-brand-yellow">{freePumpCount * 20}% ({freePumpCount} bombazos)</span>
