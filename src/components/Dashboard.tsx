@@ -78,6 +78,7 @@ export default function Dashboard({
   };
 
   const isModuleUnlocked = (module: LessonModule) => {
+    if (currentUserProfile.role === 'admin') return true;
     return getModuleUnlockWeek(module) <= currentUnlockedWeek;
   };
 
@@ -132,7 +133,9 @@ export default function Dashboard({
           )}
 
           <span className={`text-xs font-bold truncate ${active ? 'text-brand-dark font-black' : ''}`}>
-            {isBonus ? `Bonus ${m.order - regularModules.length}` : `Módulo ${m.order}`}
+            {isBonus
+              ? `Bonus ${bonusModules.findIndex((bonus) => bonus.id === m.id) + 1}`
+              : m.order === 0 ? 'Introducción' : `Módulo ${m.order}`}
           </span>
         </div>
 
@@ -244,7 +247,7 @@ export default function Dashboard({
 
             <div className="space-y-1">
               <p className="text-[10px] font-bold text-brand-blue uppercase tracking-widest mb-2 pl-1">
-                Clases Teóricas y Prácticas (13)
+                Clases Teóricas y Prácticas ({regularModules.length - 1})
               </p>
 
               <div className="space-y-1" id="regular-modules-sidebar-list">
@@ -255,7 +258,7 @@ export default function Dashboard({
             <div className="space-y-1 pt-3 border-t border-dashed border-gray-100">
               <p className="text-[10px] font-bold text-brand-salmon uppercase tracking-widest mb-2 pl-1 flex items-center gap-1">
                 <Gift className="w-3 h-3 text-brand-salmon" />
-                Regalos de Bonus Especial (4)
+                Regalos de Bonus Especial ({bonusModules.length})
               </p>
 
               <div className="space-y-1" id="bonus-modules-sidebar-list">
