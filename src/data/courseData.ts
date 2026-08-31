@@ -108,6 +108,16 @@ export const MODULES_DATA: LessonModule[] = [
     isBonus: false, order: 14, duration: 'Clase grabada', difficulty: 'Intermedio',
     learnPoints: ['Selección de diseños.', 'Organización por dificultad y tiempo.', 'Presentación clara del repertorio.'],
     videoUrl: embed('HvO4XDg0OKg'), videoThumbnail: thumbnail('HvO4XDg0OKg'),
+    documents: [
+      {
+        id: 'doc-menu-globoflexia',
+        title: 'Plantilla de Menú de Globoflexia',
+        size: 'Plantilla editable',
+        format: 'CANVA',
+        downloadUrl: 'https://canva.link/0b36i1thsnzlx0i',
+        description: 'Plantilla editable para organizar y presentar tu menú de figuras.',
+      },
+    ],
   },
   {
     id: 'mod-15', title: '15. Globoflexia en Cumpleaños y Eventos',
@@ -129,6 +139,16 @@ export const MODULES_DATA: LessonModule[] = [
     isBonus: true, order: 17, duration: 'Clase bonus', difficulty: 'Intermedio',
     learnPoints: ['Estructura de una historia con globos.', 'Transformaciones visuales.', 'Participación y mensaje final.'],
     videoUrl: embed('dlz4x84Ho-E'), videoThumbnail: thumbnail('dlz4x84Ho-E'),
+    documents: [
+      {
+        id: 'doc-contando-historias',
+        title: 'Contando Historias con Globos',
+        size: 'Ebook',
+        format: 'PDF',
+        downloadUrl: 'https://drive.google.com/uc?export=download&id=16h36SGpHWzMysT_iOw_Sn9pfs3bqYI2_',
+        description: 'Ebook complementario del bonus Contando Historias con Globos.',
+      },
+    ],
   },
   {
     id: 'bonus-2', title: 'Bonus 2: Estructura y Trucos usando Globoflexia',
