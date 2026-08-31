@@ -398,13 +398,11 @@ export default function BalloonInflater() {
                     </div>
 
                     {/* EXPLANATION POPDOWN */}
-                    <AnimatePresence>
-                      {showExplanation && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
+                    {showExplanation && (
+                        <div
                           className="pt-3 border-t border-brand-beige/25 mt-3 space-y-2"
+                          role="status"
+                          aria-live="polite"
                         >
                           <div className="flex items-start gap-1.5 text-xs text-amber-500 bg-brand-yellow/5 p-2.5 rounded-lg border border-brand-yellow/20">
                             <Lightbulb className="w-4.5 h-4.5 text-brand-yellow flex-shrink-0 mt-0.5" />
@@ -424,9 +422,8 @@ export default function BalloonInflater() {
                               ? "Siguiente Bombeo 💨" 
                               : "Ver resultado del globo 💥"}
                           </button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                        </div>
+                    )}
                   </div>
                 </div>
               )}
