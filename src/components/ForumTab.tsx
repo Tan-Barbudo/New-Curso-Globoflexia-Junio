@@ -177,6 +177,13 @@ export default function ForumTab({ comments, currentUser, onAddComment, onAddRep
 
         {/* Right Column: Feed of comments */}
         <div className="lg:col-span-2 space-y-4" id="forum-feed-wrapper">
+          {filteredComments.length === 0 && (
+            <div className="bg-white border-4 border-brand-dark rounded-3xl p-8 md:p-12 sticker-shadow text-center">
+              <MessageCircle className="w-12 h-12 text-brand-blue mx-auto mb-4" />
+              <h3 className="font-display font-bold text-lg text-brand-dark">Todavía no hay publicaciones</h3>
+              <p className="text-sm text-gray-500 mt-2">¡Sé el primero en compartir una duda, un logro o una inspiración!</p>
+            </div>
+          )}
           {filteredComments.map((comment) => (
             <div
               key={comment.id}
