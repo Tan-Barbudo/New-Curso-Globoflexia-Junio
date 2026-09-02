@@ -53,6 +53,14 @@ export interface UserStats {
   joinedDate: string;
 }
 
+export interface AdminStudentProgress {
+  userId: string;
+  username: string;
+  completedLessons: string[];
+  joinedDate: string;
+  updatedAt: string;
+}
+
 export type AccessStatus = 'pending' | 'approved' | 'rejected' | 'blocked';
 export type UserRole = 'student' | 'admin';
 

@@ -20,6 +20,7 @@ import {
   Youtube,
   Facebook,
   Users,
+  BarChart3,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import VideoPlayer from './VideoPlayer';
@@ -40,6 +41,7 @@ interface DashboardProps {
   onToggleCommentLike: (commentId: string) => void;
   onUpdateModules: (updatedModules: LessonModule[]) => void;
   adminUsersPanel: React.ReactNode;
+  adminProgressPanel: React.ReactNode;
 }
 
 export default function Dashboard({
@@ -54,8 +56,9 @@ export default function Dashboard({
   onAddReply,
   onToggleCommentLike,
   adminUsersPanel,
+  adminProgressPanel,
 }: DashboardProps) {
-  const [activeTab, setActiveTab] = useState<'video' | 'forum' | 'game' | 'users'>('video');
+  const [activeTab, setActiveTab] = useState<'video' | 'forum' | 'game' | 'users' | 'progress'>('video');
   const [selectedModuleId, setSelectedModuleId] = useState<string>('intro');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -362,18 +365,32 @@ export default function Dashboard({
             </button>
 
             {currentUserProfile.role === 'admin' && (
-              <button
-                onClick={() => setActiveTab('users')}
-                id="tab-users-button"
-                className={`cursor-pointer px-4 py-3 rounded-t-2xl font-display font-bold text-xs md:text-sm uppercase tracking-wider flex items-center gap-2 border-t-3 border-x-3 transition-all ${
-                  activeTab === 'users'
-                    ? 'bg-white border-brand-dark text-brand-dark translate-y-[3px]'
-                    : 'bg-transparent border-transparent text-gray-500 hover:text-brand-dark'
-                }`}
-              >
-                <Users className="w-4.5 h-4.5 text-brand-blue" />
-                <span>Solicitudes</span>
-              </button>
+              <>
+                <button
+                  onClick={() => setActiveTab('users')}
+                  id="tab-users-button"
+                  className={`cursor-pointer px-4 py-3 rounded-t-2xl font-display font-bold text-xs md:text-sm uppercase tracking-wider flex items-center gap-2 border-t-3 border-x-3 transition-all ${
+                    activeTab === 'users'
+                      ? 'bg-white border-brand-dark text-brand-dark translate-y-[3px]'
+                      : 'bg-transparent border-transparent text-gray-500 hover:text-brand-dark'
+                  }`}
+                >
+                  <Users className="w-4.5 h-4.5 text-brand-blue" />
+                  <span>Solicitudes</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('progress')}
+                  id="tab-progress-button"
+                  className={`cursor-pointer px-4 py-3 rounded-t-2xl font-display font-bold text-xs md:text-sm uppercase tracking-wider flex items-center gap-2 border-t-3 border-x-3 transition-all ${
+                    activeTab === 'progress'
+                      ? 'bg-white border-brand-dark text-brand-dark translate-y-[3px]'
+                      : 'bg-transparent border-transparent text-gray-500 hover:text-brand-dark'
+                  }`}
+                >
+                  <BarChart3 className="w-4.5 h-4.5 text-brand-green" />
+                  <span>Progreso</span>
+                </button>
+              </>
             )}
           </div>
 
@@ -447,6 +464,17 @@ export default function Dashboard({
                   exit={{ opacity: 0 }}
                 >
                   {adminUsersPanel}
+                </motion.div>
+              )}
+
+              {activeTab === 'progress' && currentUserProfile.role === 'admin' && (
+                <motion.div
+                  key="progress"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {adminProgressPanel}
                 </motion.div>
               )}
             </AnimatePresence>

@@ -22,12 +22,14 @@ import {
 } from 'firebase/firestore';
 import AccessStatus from './components/AccessStatus';
 import AdminUsersPanel from './components/AdminUsersPanel';
+import AdminProgressPanel from './components/AdminProgressPanel';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
 import { MODULES_DATA } from './data/courseData';
 import { auth, db, isFirebaseConfigured } from './firebase';
 import {
   AcademyUser,
+  AdminStudentProgress,
   DocumentAsset,
   ForumComment,
   ForumReply,
@@ -62,6 +64,9 @@ export default function App() {
   const [modules, setModules] = useState<LessonModule[]>(MODULES_DATA);
   const [comments, setComments] = useState<ForumComment[]>([]);
   const [academyUsers, setAcademyUsers] = useState<AcademyUser[]>([]);
+  const [academyProgress, setAcademyProgress] = useState<AdminStudentProgress[]>([]);
+  const [progressLoading, setProgressLoading] = useState(false);
+  const [progressError, setProgressError] = useState('');
   const [usersLoading, setUsersLoading] = useState(false);
   const [busyUserUid, setBusyUserUid] = useState('');
   const [usersError, setUsersError] = useState('');
@@ -242,6 +247,42 @@ export default function App() {
         console.error('No se pudieron cargar los usuarios:', error);
         setUsersError('No se pudieron cargar las solicitudes. Revisa las reglas de Firestore.');
         setUsersLoading(false);
+      },
+    );
+
+    return unsubscribe;
+  }, [authUser, profile?.role, profile?.status]);
+
+  useEffect(() => {
+    if (!authUser || profile?.status !== 'approved' || profile.role !== 'admin' || !db) {
+      setAcademyProgress([]);
+      setProgressLoading(false);
+      return;
+    }
+
+    setProgressLoading(true);
+    setProgressError('');
+    const unsubscribe = onSnapshot(
+      collection(db, 'progress'),
+      (snapshot) => {
+        setAcademyProgress(snapshot.docs.map((progressSnapshot) => {
+          const data = progressSnapshot.data();
+          return {
+            userId: progressSnapshot.id,
+            username: String(data.username || 'Alumno'),
+            completedLessons: Array.isArray(data.completedLessons)
+              ? data.completedLessons.filter((id) => typeof id === 'string')
+              : [],
+            joinedDate: String(data.joinedDate || ''),
+            updatedAt: data.updatedAt ? formatDate(data.updatedAt) : '',
+          } as AdminStudentProgress;
+        }));
+        setProgressLoading(false);
+      },
+      (error) => {
+        console.error('No se pudo cargar el progreso general:', error);
+        setProgressError('No se pudo cargar el progreso. Revisa las reglas de Firestore.');
+        setProgressLoading(false);
       },
     );
 
@@ -500,6 +541,15 @@ export default function App() {
             busyUserUid={busyUserUid}
             error={usersError}
             onUpdateAccess={handleUpdateUserAccess}
+          />
+        )}
+        adminProgressPanel={(
+          <AdminProgressPanel
+            users={academyUsers}
+            progress={academyProgress}
+            modules={modules}
+            isLoading={usersLoading || progressLoading}
+            error={progressError}
           />
         )}
       />
