@@ -25,6 +25,7 @@ import AdminUsersPanel from './components/AdminUsersPanel';
 import AdminProgressPanel from './components/AdminProgressPanel';
 import Dashboard from './components/Dashboard';
 import Login from './components/Login';
+import LearningHub from './components/LearningHub';
 import { MODULES_DATA } from './data/courseData';
 import { auth, db, isFirebaseConfigured } from './firebase';
 import {
@@ -61,6 +62,7 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(true);
   const [signInLoading, setSignInLoading] = useState(false);
   const [authError, setAuthError] = useState('');
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [modules, setModules] = useState<LessonModule[]>(MODULES_DATA);
   const [comments, setComments] = useState<ForumComment[]>([]);
   const [academyUsers, setAcademyUsers] = useState<AcademyUser[]>([]);
@@ -518,10 +520,23 @@ export default function App() {
     return <AccessStatus profile={profile} onLogout={handleLogout} />;
   }
 
+  if (!selectedCourseId) {
+    return (
+      <LearningHub
+        profile={profile}
+        modules={modules}
+        stats={stats}
+        onOpenGloboflexia={() => setSelectedCourseId('globoflexia')}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
   return (
     <div id="app-viewport-root">
       <Dashboard
         currentUserProfile={profile}
+        onBackToCourses={() => setSelectedCourseId(null)}
         currentUser={profile.displayName}
         modulesData={modules}
         documentsList={allDocuments}

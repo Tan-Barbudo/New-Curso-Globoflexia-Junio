@@ -49,10 +49,10 @@ export default function Login({ onGoogleSignIn, isLoading, error }: LoginProps) 
               />
               <div className="text-left">
                 <h1 className="text-sm font-display font-medium text-brand-yellow leading-tight">
-                  Academia de Globoflexia
+                  Aprende con Tan
                 </h1>
                 <p className="text-[11px] text-gray-500">
-                  Aprende a crear sonrisas con globos inflados de amor.
+                  Creatividad, herramientas y diversión con propósito.
                 </p>
               </div>
             </div>
@@ -101,7 +101,7 @@ export default function Login({ onGoogleSignIn, isLoading, error }: LoginProps) 
 
       <div className="w-full max-w-md text-center pb-6 z-10">
         <p className="text-gray-400 font-bold text-xs uppercase tracking-wider">
-          Tan Barbudo — Escuela de Sonrisas y Modelado
+          Tan Barbudo — Aprende, crea y comparte
         </p>
       </div>
     </div>

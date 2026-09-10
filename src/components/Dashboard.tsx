@@ -21,6 +21,7 @@ import {
   Facebook,
   Users,
   BarChart3,
+  LayoutGrid,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import VideoPlayer from './VideoPlayer';
@@ -29,6 +30,7 @@ import BalloonInflater from './BalloonInflater';
 
 interface DashboardProps {
   currentUserProfile: AcademyUser;
+  onBackToCourses: () => void;
   currentUser: string;
   modulesData: LessonModule[];
   documentsList: DocumentAsset[];
@@ -46,6 +48,7 @@ interface DashboardProps {
 
 export default function Dashboard({
   currentUserProfile,
+  onBackToCourses,
   currentUser,
   modulesData,
   forumComments,
@@ -162,6 +165,15 @@ export default function Dashboard({
               id="hamburger-menu"
             >
               <Menu className="w-5 h-5 text-white" />
+            </button>
+
+            <button
+              onClick={onBackToCourses}
+              className="p-2 hover:bg-white/10 rounded-xl border border-white/20 flex items-center gap-2"
+              title="Volver a Aprende con Tan"
+            >
+              <LayoutGrid className="w-5 h-5 text-brand-yellow" />
+              <span className="hidden lg:inline text-[10px] font-bold uppercase tracking-wider">Cursos</span>
             </button>
 
             <div className="flex items-center gap-3">
