@@ -158,18 +158,18 @@ export const MODULES_DATA: LessonModule[] = [
     videoUrl: embed('EeHNfRi13eQ'), videoThumbnail: thumbnail('EeHNfRi13eQ'),
   },
   {
-    id: 'bonus-3', title: 'Bonus 3: Rutinas y Guiones con Globos',
-    description: 'Contenido en preparación. Aquí aprenderás a transformar trucos y figuras en rutinas completas con estructura, interacción y cierre.',
-    isBonus: true, order: 19, duration: 'Próximamente', difficulty: 'Intermedio',
+    id: 'bonus-3', title: 'Bonus 3: Rutinas con Globos',
+    description: 'Aprenderás a transformar trucos y figuras en rutinas completas con estructura, interacción y un cierre memorable.',
+    isBonus: true, order: 19, duration: 'Clase bonus', difficulty: 'Intermedio',
     learnPoints: ['Estructura de rutinas.', 'Interacción con el público.', 'Creación de guiones con globos.'],
-    videoUrl: '', videoThumbnail: '',
+    videoUrl: embed('Ct1zgm_f9Ss'), videoThumbnail: thumbnail('Ct1zgm_f9Ss'),
   },
   {
-    id: 'bonus-4', title: 'Bonus 4: Globoterapia Recreativa',
-    description: 'Contenido en preparación. Trabajaremos participación, creatividad, expresión, juego e interacción mediante actividades recreativas con globos.',
-    isBonus: true, order: 20, duration: 'Próximamente', difficulty: 'Intermedio',
+    id: 'bonus-4', title: 'Bonus 4: GloboTerapia Recreativa',
+    description: 'Aprenderás a utilizar los globos para promover participación, creatividad, expresión, juego e interacción mediante actividades recreativas.',
+    isBonus: true, order: 20, duration: 'Clase bonus', difficulty: 'Intermedio',
     learnPoints: ['Participación y creatividad.', 'Expresión y juego.', 'Actividades recreativas con globos.'],
-    videoUrl: '', videoThumbnail: '',
+    videoUrl: embed('252_ofj7Lqc'), videoThumbnail: thumbnail('252_ofj7Lqc'),
   },
 ];
 
