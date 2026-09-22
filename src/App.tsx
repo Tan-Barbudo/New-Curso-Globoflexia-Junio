@@ -24,6 +24,7 @@ import AccessStatus from './components/AccessStatus';
 import AdminUsersPanel from './components/AdminUsersPanel';
 import AdminProgressPanel from './components/AdminProgressPanel';
 import Dashboard from './components/Dashboard';
+import IntroCourse from './components/IntroCourse';
 import Login from './components/Login';
 import LearningHub from './components/LearningHub';
 import { MODULES_DATA } from './data/courseData';
@@ -526,8 +527,38 @@ export default function App() {
         profile={profile}
         modules={modules}
         stats={stats}
-        onOpenGloboflexia={() => setSelectedCourseId('globoflexia')}
+        onOpenCourse={setSelectedCourseId}
         onLogout={handleLogout}
+      />
+    );
+  }
+
+  if (selectedCourseId === 'malabarismo') {
+    return (
+      <IntroCourse
+        title="Malabarismo básico"
+        subtitle="Conoce qué son los malabares, un poco de su historia, sus beneficios y cómo comenzaremos este recorrido práctico paso a paso."
+        videoId="zc1JKOOMzTM"
+        moduleId="malabarismo-intro"
+        accent="blue"
+        isCompleted={stats.completedLessons.includes('malabarismo-intro')}
+        onToggleComplete={handleToggleComplete}
+        onBack={() => setSelectedCourseId(null)}
+      />
+    );
+  }
+
+  if (selectedCourseId === 'evangelismo') {
+    return (
+      <IntroCourse
+        title="Evangelismo Creativo"
+        subtitle="El mensaje no cambia, la forma sí. Descubre cómo utilizar recursos creativos para comunicar el evangelio con claridad y propósito."
+        videoId="66mdeXb5MAI"
+        moduleId="evangelismo-intro"
+        accent="green"
+        isCompleted={stats.completedLessons.includes('evangelismo-intro')}
+        onToggleComplete={handleToggleComplete}
+        onBack={() => setSelectedCourseId(null)}
       />
     );
   }
