@@ -6,11 +6,11 @@ interface LearningHubProps {
   profile: AcademyUser;
   modules: LessonModule[];
   stats: UserStats;
-  onOpenGloboflexia: () => void;
+  onOpenCourse: (courseId: string) => void;
   onLogout: () => void;
 }
 
-const upcomingCourses = [
+const additionalCourses = [
   {
     id: 'malabarismo',
     title: 'Malabarismo básico',
@@ -18,6 +18,8 @@ const upcomingCourses = [
     icon: CircleDot,
     color: 'text-brand-blue',
     background: 'bg-brand-blue/10',
+    available: true,
+    moduleId: 'malabarismo-intro',
   },
   {
     id: 'trucos',
@@ -26,6 +28,7 @@ const upcomingCourses = [
     icon: Dices,
     color: 'text-brand-yellow',
     background: 'bg-brand-yellow/10',
+    available: false,
   },
   {
     id: 'clown',
@@ -34,6 +37,7 @@ const upcomingCourses = [
     icon: Drama,
     color: 'text-brand-red',
     background: 'bg-brand-red/10',
+    available: false,
   },
   {
     id: 'evangelismo',
@@ -42,10 +46,12 @@ const upcomingCourses = [
     icon: HeartHandshake,
     color: 'text-brand-green',
     background: 'bg-brand-green/10',
+    available: true,
+    moduleId: 'evangelismo-intro',
   },
 ];
 
-export default function LearningHub({ profile, modules, stats, onOpenGloboflexia, onLogout }: LearningHubProps) {
+export default function LearningHub({ profile, modules, stats, onOpenCourse, onLogout }: LearningHubProps) {
   const availableModules = modules.filter((module) => Boolean(module.videoUrl));
   const completedCount = stats.completedLessons.filter((id) => availableModules.some((module) => module.id === id)).length;
   const progress = availableModules.length ? Math.round((completedCount / availableModules.length) * 100) : 0;
@@ -85,7 +91,7 @@ export default function LearningHub({ profile, modules, stats, onOpenGloboflexia
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <button onClick={onOpenGloboflexia} className="text-left bg-brand-dark text-white border-4 border-brand-dark rounded-3xl p-6 sticker-shadow-lg group md:row-span-2 flex flex-col justify-between min-h-[330px]">
+          <button onClick={() => onOpenCourse('globoflexia')} className="text-left bg-brand-dark text-white border-4 border-brand-dark rounded-3xl p-6 sticker-shadow-lg group md:row-span-2 flex flex-col justify-between min-h-[330px]">
             <div>
               <div className="w-16 h-16 rounded-2xl bg-brand-yellow flex items-center justify-center text-4xl border-2 border-white/30">🎈</div>
               <span className="inline-flex mt-5 px-3 py-1 bg-brand-green text-white rounded-full text-[9px] font-bold uppercase tracking-wider">Disponible</span>
@@ -102,10 +108,16 @@ export default function LearningHub({ profile, modules, stats, onOpenGloboflexia
             </div>
           </button>
 
-          {upcomingCourses.map((course) => {
+          {additionalCourses.map((course) => {
             const Icon = course.icon;
+            const courseCompleted = course.moduleId ? stats.completedLessons.includes(course.moduleId) : false;
+            const CourseWrapper = course.available ? 'button' : 'article';
             return (
-              <article key={course.id} className="bg-white border-3 border-brand-dark rounded-3xl p-5 sticker-shadow-sm opacity-80">
+              <CourseWrapper
+                key={course.id}
+                {...(course.available ? { onClick: () => onOpenCourse(course.id), type: 'button' as const } : {})}
+                className={`w-full text-left bg-white border-3 border-brand-dark rounded-3xl p-5 sticker-shadow-sm ${course.available ? 'hover:-translate-y-0.5 transition-transform group' : 'opacity-70'}`}
+              >
                 <div className="flex items-start gap-4">
                   <div className={`w-12 h-12 rounded-2xl ${course.background} flex items-center justify-center border border-brand-dark/10 flex-shrink-0`}>
                     <Icon className={`w-6 h-6 ${course.color}`} />
@@ -113,12 +125,20 @@ export default function LearningHub({ profile, modules, stats, onOpenGloboflexia
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <h2 className="font-display text-lg font-black">{course.title}</h2>
-                      <span className="px-2.5 py-1 bg-gray-100 border border-gray-300 rounded-full text-[8px] font-bold uppercase tracking-wider text-gray-500">Próximamente</span>
+                      <span className={`px-2.5 py-1 border rounded-full text-[8px] font-bold uppercase tracking-wider ${course.available ? 'bg-brand-green/10 border-brand-green/30 text-brand-green' : 'bg-gray-100 border-gray-300 text-gray-500'}`}>
+                        {course.available ? (courseCompleted ? 'Completado' : 'Disponible') : 'Próximamente'}
+                      </span>
                     </div>
                     <p className="text-xs text-gray-500 mt-2 leading-relaxed">{course.description}</p>
                   </div>
                 </div>
-              </article>
+                {course.available && (
+                  <div className={`mt-4 flex items-center justify-between text-[10px] font-bold uppercase ${course.color}`}>
+                    <span>{courseCompleted ? 'Volver al curso' : 'Comenzar curso'}</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
+              )}
+              </CourseWrapper>
             );
           })}
         </div>
