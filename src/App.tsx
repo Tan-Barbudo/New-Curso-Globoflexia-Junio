@@ -542,6 +542,7 @@ export default function App() {
           { id: 'malabarismo-intro', title: 'Introducción al taller', videoId: 'zc1JKOOMzTM' },
         ]}
         accent="blue"
+        emoji="🤹"
         completedLessons={stats.completedLessons}
         onToggleComplete={handleToggleComplete}
         onBack={() => setSelectedCourseId(null)}
@@ -555,13 +556,14 @@ export default function App() {
         title="Evangelismo Creativo"
         subtitle="El mensaje no cambia, la forma sí. Descubre cómo utilizar recursos creativos para comunicar el evangelio con claridad y propósito."
         modules={[
-          { id: 'evangelismo-intro', title: 'Introducción al taller', videoId: '66mdeXb5MAI' },
+          { id: 'evangelismo-intro', title: 'Introducción al taller', videoId: '66mdeXb5MAI', description: 'Conoce el recorrido del taller y cómo la creatividad puede ayudarnos a comunicar el evangelio con claridad.', learnPoints: ['Presentación del taller.', 'Propósito del evangelismo creativo.', 'Cómo aprovechar cada módulo.'] },
           { id: 'evangelismo-mod-1', title: 'Módulo 1', videoId: 'F4tmX3MUAD0' },
           { id: 'evangelismo-mod-2', title: 'Módulo 2', videoId: '_Jf1WC-Tdlg' },
           { id: 'evangelismo-mod-3', title: 'Módulo 3', videoId: '5O2dX8PxEx0' },
-          { id: 'evangelismo-mod-4', title: 'Módulo 4', videoId: 'ibCme7E-lI8' },
+          { id: 'evangelismo-mod-4', title: 'Módulo 4', videoId: 'ibCme7E-lI8', description: 'Completa esta clase y descarga el material adicional para continuar practicando y aplicar lo aprendido.', resource: { title: 'Material adicional del Módulo 4', format: 'PDF', url: 'https://docs.google.com/document/d/1NjtTCuGFvwRRBEgzF_-qa4HBp3sAf7UC2dLVysbqHA8/export?format=pdf' } },
         ]}
         accent="green"
+        emoji="💡"
         completedLessons={stats.completedLessons}
         onToggleComplete={handleToggleComplete}
         onBack={() => setSelectedCourseId(null)}
