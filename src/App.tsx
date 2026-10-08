@@ -538,10 +538,11 @@ export default function App() {
       <IntroCourse
         title="Malabarismo básico"
         subtitle="Conoce qué son los malabares, un poco de su historia, sus beneficios y cómo comenzaremos este recorrido práctico paso a paso."
-        videoId="zc1JKOOMzTM"
-        moduleId="malabarismo-intro"
+        modules={[
+          { id: 'malabarismo-intro', title: 'Introducción al taller', videoId: 'zc1JKOOMzTM' },
+        ]}
         accent="blue"
-        isCompleted={stats.completedLessons.includes('malabarismo-intro')}
+        completedLessons={stats.completedLessons}
         onToggleComplete={handleToggleComplete}
         onBack={() => setSelectedCourseId(null)}
       />
@@ -553,10 +554,15 @@ export default function App() {
       <IntroCourse
         title="Evangelismo Creativo"
         subtitle="El mensaje no cambia, la forma sí. Descubre cómo utilizar recursos creativos para comunicar el evangelio con claridad y propósito."
-        videoId="66mdeXb5MAI"
-        moduleId="evangelismo-intro"
+        modules={[
+          { id: 'evangelismo-intro', title: 'Introducción al taller', videoId: '66mdeXb5MAI' },
+          { id: 'evangelismo-mod-1', title: 'Módulo 1', videoId: 'F4tmX3MUAD0' },
+          { id: 'evangelismo-mod-2', title: 'Módulo 2', videoId: '_Jf1WC-Tdlg' },
+          { id: 'evangelismo-mod-3', title: 'Módulo 3', videoId: '5O2dX8PxEx0' },
+          { id: 'evangelismo-mod-4', title: 'Módulo 4', videoId: 'ibCme7E-lI8' },
+        ]}
         accent="green"
-        isCompleted={stats.completedLessons.includes('evangelismo-intro')}
+        completedLessons={stats.completedLessons}
         onToggleComplete={handleToggleComplete}
         onBack={() => setSelectedCourseId(null)}
       />

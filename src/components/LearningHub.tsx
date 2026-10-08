@@ -19,7 +19,7 @@ const additionalCourses = [
     color: 'text-brand-blue',
     background: 'bg-brand-blue/10',
     available: true,
-    moduleId: 'malabarismo-intro',
+    moduleIds: ['malabarismo-intro'],
   },
   {
     id: 'trucos',
@@ -47,7 +47,7 @@ const additionalCourses = [
     color: 'text-brand-green',
     background: 'bg-brand-green/10',
     available: true,
-    moduleId: 'evangelismo-intro',
+    moduleIds: ['evangelismo-intro', 'evangelismo-mod-1', 'evangelismo-mod-2', 'evangelismo-mod-3', 'evangelismo-mod-4'],
   },
 ];
 
@@ -110,7 +110,10 @@ export default function LearningHub({ profile, modules, stats, onOpenCourse, onL
 
           {additionalCourses.map((course) => {
             const Icon = course.icon;
-            const courseCompleted = course.moduleId ? stats.completedLessons.includes(course.moduleId) : false;
+            const courseModuleIds = course.moduleIds || [];
+            const courseCompletedCount = courseModuleIds.filter((id) => stats.completedLessons.includes(id)).length;
+            const courseCompleted = courseModuleIds.length > 0 && courseCompletedCount === courseModuleIds.length;
+            const courseStarted = courseCompletedCount > 0;
             const CourseWrapper = course.available ? 'button' : 'article';
             return (
               <CourseWrapper
@@ -134,7 +137,7 @@ export default function LearningHub({ profile, modules, stats, onOpenCourse, onL
                 </div>
                 {course.available && (
                   <div className={`mt-4 flex items-center justify-between text-[10px] font-bold uppercase ${course.color}`}>
-                    <span>{courseCompleted ? 'Volver al curso' : 'Comenzar curso'}</span>
+                    <span>{courseCompleted ? 'Curso completado' : courseStarted ? 'Continuar aprendiendo' : 'Comenzar curso'}</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
               )}
