@@ -8,6 +8,7 @@ interface LearningHubProps {
   stats: UserStats;
   onOpenCourse: (courseId: string) => void;
   onLogout: () => void;
+  onOpenAdmin: () => void;
 }
 
 const additionalCourses = [
@@ -53,14 +54,21 @@ const additionalCourses = [
   },
 ];
 
-export default function LearningHub({ profile, modules, stats, onOpenCourse, onLogout }: LearningHubProps) {
+export default function LearningHub({ profile, modules, stats, onOpenCourse, onLogout, onOpenAdmin }: LearningHubProps) {
   const globoflexiaAccess = hasCourseAccess(profile, 'globoflexia');
   const availableModules = modules.filter((module) => Boolean(module.videoUrl));
   const completedCount = stats.completedLessons.filter((id) => availableModules.some((module) => module.id === id)).length;
   const progress = availableModules.length ? Math.round((completedCount / availableModules.length) * 100) : 0;
 
+  const [filter, setFilter] = React.useState<'all' | 'mine'>('all');
+  const visibleCourses = additionalCourses.filter(course => filter === 'all' || (course.available && hasCourseAccess(profile, course.id)));
+  const resumable = [
+    { id: 'globoflexia', label: 'Globoflexia', ids: availableModules.map(m => m.id) },
+    ...additionalCourses.filter(c => c.available).map(c => ({id: c.id, label: c.title, ids: c.moduleIds || []})),
+  ].find(c => hasCourseAccess(profile, c.id) && c.ids.some(id => stats.completedLessons.includes(id)) && c.ids.some(id => !stats.completedLessons.includes(id)));
+
   return (
-    <div className="min-h-screen bg-[#FFFDF9] text-brand-dark">
+    <div className="academy-hub min-h-screen text-brand-dark">
       <header className="bg-brand-dark text-white border-b-4 border-brand-dark">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -75,7 +83,7 @@ export default function LearningHub({ profile, modules, stats, onOpenCourse, onL
               <p className="text-xs font-bold">{profile.displayName}</p>
               <p className="text-[9px] uppercase tracking-wider text-brand-yellow">{profile.role === 'admin' ? 'Administrador' : 'Alumno'}</p>
             </div>
-            <button onClick={onLogout} className="p-2 rounded-xl border border-white/20 hover:bg-white/10" title="Cerrar sesión">
+            <button onClick={onLogout} className="p-2 rounded-xl border border-white/20 hover:bg-white/10" title="Cerrar sesión" aria-label="Cerrar sesión">
               <LogOut className="w-5 h-5" />
             </button>
           </div>
@@ -93,8 +101,20 @@ export default function LearningHub({ profile, modules, stats, onOpenCourse, onL
           </p>
         </div>
 
+        {profile.role === 'admin' && (
+          <button onClick={onOpenAdmin} className="mb-5 w-full sm:w-auto px-5 py-3 rounded-xl border border-brand-yellow font-bold text-sm text-brand-yellow">Panel de administración</button>
+        )}
+        {resumable && <button onClick={() => onOpenCourse(resumable.id)} className="mb-6 w-full flex items-center justify-between gap-3 rounded-2xl bg-brand-yellow/10 border border-brand-yellow px-5 py-4 text-left">
+          <span><span className="block text-xs text-brand-yellow font-bold">CONTINÚA APRENDIENDO</span><span className="block font-bold mt-1">{resumable.label}</span></span><ArrowRight className="w-5 h-5 shrink-0"/>
+        </button>}
+        <div className="flex flex-wrap gap-2 mb-5" aria-label="Filtrar talleres">
+          {([['all','Todos los talleres'],['mine','Mis talleres']] as const).map(([id,label]) =>
+            <button key={id} aria-pressed={filter === id} onClick={() => setFilter(id)} className={`px-4 py-3 rounded-xl text-sm font-bold border ${filter === id ? 'bg-brand-yellow text-white' : 'bg-white'}`}>{label}</button>
+          )}
+        </div>
+        {filter === 'mine' && !globoflexiaAccess && visibleCourses.length === 0 && <p className="py-8 text-gray-500">Aún no tienes talleres disponibles. Solicita acceso al administrador.</p>}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <button disabled={!globoflexiaAccess} onClick={() => onOpenCourse('globoflexia')} className="text-left bg-brand-dark text-white border-4 border-brand-dark rounded-3xl p-6 sticker-shadow-lg group md:row-span-2 flex flex-col justify-between min-h-[330px]">
+          {(filter === 'all' || globoflexiaAccess) && <button disabled={!globoflexiaAccess} onClick={() => onOpenCourse('globoflexia')} className="text-left bg-brand-dark text-white border-4 border-brand-dark rounded-3xl p-6 sticker-shadow-lg group md:row-span-2 flex flex-col justify-between min-h-[330px]">
             <div>
               <div className="w-16 h-16 rounded-2xl bg-brand-yellow flex items-center justify-center text-4xl border-2 border-white/30">🎈</div>
               <span className="inline-flex mt-5 px-3 py-1 bg-brand-green text-white rounded-full text-[9px] font-bold uppercase tracking-wider">{globoflexiaAccess ? 'Disponible' : 'Sin acceso'}</span>
@@ -109,9 +129,9 @@ export default function LearningHub({ profile, modules, stats, onOpenCourse, onL
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
-          </button>
+          </button>}
 
-          {additionalCourses.map((course) => {
+          {visibleCourses.map((course) => {
             const Icon = course.icon;
             const courseModuleIds = course.moduleIds || [];
             const courseCompletedCount = courseModuleIds.filter((id) => stats.completedLessons.includes(id)).length;
