@@ -6,12 +6,13 @@ import { motion } from 'motion/react';
 interface VideoPlayerProps {
   module: LessonModule;
   isCompleted: boolean;
+  courseCompleted: boolean;
   onToggleComplete: (id: string) => void;
   onNavigateToDocs: () => void;
 }
 
-export default function VideoPlayer({ module, isCompleted, onToggleComplete, onNavigateToDocs }: VideoPlayerProps) {
-  const canRequestCertificate = module.id === 'bonus-4' && Boolean(module.videoUrl) && isCompleted;
+export default function VideoPlayer({ module, isCompleted, courseCompleted, onToggleComplete, onNavigateToDocs }: VideoPlayerProps) {
+  const canRequestCertificate = module.id === 'bonus-4' && Boolean(module.videoUrl) && isCompleted && courseCompleted;
 
   return (
     <div className="space-y-6" id="video-theater-layout">
