@@ -380,20 +380,34 @@ export default function App() {
   const handleToggleComplete = async (moduleId: string) => {
     if (!authUser || profile?.status !== 'approved' || !db) return;
 
-    const completedLessons = stats.completedLessons.includes(moduleId)
-      ? stats.completedLessons.filter((id) => id !== moduleId)
-      : [...stats.completedLessons, moduleId];
-    const updatedStats = { ...stats, completedLessons };
-    setStats(updatedStats);
-    localStorage.setItem(`tb_stats_${authUser.uid}`, JSON.stringify(updatedStats));
+    const courseIds = selectedCourseId === 'malabarismo'
+      ? ['malabarismo-intro']
+      : selectedCourseId === 'evangelismo'
+        ? ['evangelismo-intro', 'evangelismo-mod-1', 'evangelismo-mod-2', 'evangelismo-mod-3', 'evangelismo-mod-4']
+        : modules.filter((module) => Boolean(module.videoUrl)).map((module) => module.id);
+    const index = courseIds.indexOf(moduleId);
+    if (index < 0) return;
     try {
-      await setDoc(
-        doc(db, 'progress', authUser.uid),
-        { ...updatedStats, updatedAt: serverTimestamp() },
-        { merge: true },
-      );
+      const progressRef = doc(db, 'progress', authUser.uid);
+      await runTransaction(db, async (transaction) => {
+        const snapshot = await transaction.get(progressRef);
+        if (!snapshot.exists()) throw new Error('El progreso aún no está inicializado.');
+        const data = snapshot.data();
+        const completed: string[] = Array.isArray(data.completedLessons)
+          ? [...new Set<string>(data.completedLessons.filter((id: unknown): id is string => typeof id === 'string'))]
+          : [];
+        if (!completed.includes(moduleId) && index > 0 && !completed.includes(courseIds[index - 1])) {
+          throw new Error('Completa primero la lección anterior.');
+        }
+        const completedLessons = completed.includes(moduleId)
+          ? completed.filter((id) => id !== moduleId)
+          : [...completed, moduleId];
+        transaction.update(progressRef, { completedLessons, updatedAt: serverTimestamp() });
+      });
+      // The Firestore listener updates the UI and local cache after confirmation.
     } catch (error) {
       console.error('No se pudo guardar el progreso:', error);
+      window.alert('No se pudo guardar el progreso. Comprueba tu conexión y vuelve a intentarlo.');
     }
   };
 
