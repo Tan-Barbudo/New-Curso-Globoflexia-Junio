@@ -20,6 +20,7 @@ const additionalCourses = [
     background: 'bg-brand-blue/10',
     available: true,
     moduleIds: ['malabarismo-intro'],
+    plannedLessons: 7,
   },
   {
     id: 'trucos',
@@ -48,6 +49,7 @@ const additionalCourses = [
     background: 'bg-brand-green/10',
     available: true,
     moduleIds: ['evangelismo-intro', 'evangelismo-mod-1', 'evangelismo-mod-2', 'evangelismo-mod-3', 'evangelismo-mod-4'],
+    plannedLessons: 7,
   },
 ];
 
@@ -113,7 +115,7 @@ export default function LearningHub({ profile, modules, stats, onOpenCourse, onL
             const Icon = course.icon;
             const courseModuleIds = course.moduleIds || [];
             const courseCompletedCount = courseModuleIds.filter((id) => stats.completedLessons.includes(id)).length;
-            const courseCompleted = courseModuleIds.length > 0 && courseCompletedCount === courseModuleIds.length;
+            const courseCompleted = Boolean(course.plannedLessons && courseCompletedCount === course.plannedLessons);
             const courseStarted = courseCompletedCount > 0;
             const accessible = course.available && hasCourseAccess(profile, course.id);
             const CourseWrapper = accessible ? 'button' : 'article';
@@ -137,6 +139,13 @@ export default function LearningHub({ profile, modules, stats, onOpenCourse, onL
                     <p className="text-xs text-gray-500 mt-2 leading-relaxed">{course.description}</p>
                   </div>
                 </div>
+                {accessible && course.plannedLessons && (
+                  <div className="mt-4">
+                    <div className="flex justify-between text-[10px] font-bold mb-2"><span>{courseCompletedCount} de {course.plannedLessons} clases previstas</span><span>{Math.round(courseCompletedCount / course.plannedLessons * 100)}%</span></div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden"><div className="h-full bg-brand-green" style={{width: `${courseCompletedCount / course.plannedLessons * 100}%`}} /></div>
+                    {courseModuleIds.length < course.plannedLessons && <p className="text-[10px] text-gray-500 mt-2">{courseModuleIds.length} clases publicadas. Próximamente más contenido.</p>}
+                  </div>
+                )}
                 {accessible && (
                   <div className={`mt-4 flex items-center justify-between text-[10px] font-bold uppercase ${course.color}`}>
                     <span>{courseCompleted ? 'Curso completado' : courseStarted ? 'Continuar aprendiendo' : 'Comenzar curso'}</span>
