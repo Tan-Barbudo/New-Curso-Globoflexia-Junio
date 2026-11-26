@@ -31,6 +31,10 @@ import { MODULES_DATA } from './data/courseData';
 import { auth, db, isFirebaseConfigured } from './firebase';
 import {
   AcademyUser,
+  CourseId,
+  COURSE_IDS,
+  hasCourseAccess,
+  parseCourseAccess,
   AdminStudentProgress,
   DocumentAsset,
   ForumComment,
@@ -136,6 +140,7 @@ export default function App() {
               photoURL: String(data.photoURL || avatarFor(user)),
               status: data.status,
               role: data.role,
+              courseAccess: parseCourseAccess(data.courseAccess),
             });
             setAuthLoading(false);
           },
@@ -236,6 +241,7 @@ export default function App() {
             photoURL: String(data.photoURL || ''),
             status: data.status,
             role: data.role,
+              courseAccess: parseCourseAccess(data.courseAccess),
           } as AcademyUser;
         });
         nextUsers.sort((a, b) => {
@@ -397,7 +403,7 @@ export default function App() {
         ? ['evangelismo-intro', 'evangelismo-mod-1', 'evangelismo-mod-2', 'evangelismo-mod-3', 'evangelismo-mod-4']
         : modules.filter((module) => Boolean(module.videoUrl)).map((module) => module.id);
     const index = courseIds.indexOf(moduleId);
-    if (index < 0) return;
+    if (index < 0 || !hasCourseAccess(profile, selectedCourseId || 'globoflexia')) return;
     try {
       const progressRef = doc(db, 'progress', authUser.uid);
       await runTransaction(db, async (transaction) => {
@@ -503,6 +509,23 @@ export default function App() {
     }
   };
 
+  const handleUpdateCourseAccess = async (user: AcademyUser, courses: CourseId[]) => {
+    if (!authUser || profile?.status !== 'approved' || profile.role !== 'admin' || !db || user.role === 'admin') return;
+    setBusyUserUid(user.uid);
+    setUsersError('');
+    try {
+      await updateDoc(doc(db, 'users', user.uid), {
+        courseAccess: COURSE_IDS.filter(id => courses.includes(id)),
+        updatedAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error('No se pudieron guardar los talleres:', error);
+      setUsersError('No se pudieron guardar los permisos. Inténtalo nuevamente.');
+    } finally {
+      setBusyUserUid('');
+    }
+  };
+
   const allDocuments: DocumentAsset[] = [];
   const seenDocIds = new Set<string>();
   modules.forEach((module) => {
@@ -546,7 +569,7 @@ export default function App() {
     return <AccessStatus profile={profile} onLogout={handleLogout} />;
   }
 
-  if (!selectedCourseId) {
+  if (!selectedCourseId || !hasCourseAccess(profile, selectedCourseId)) {
     return (
       <LearningHub
         profile={profile}
@@ -620,6 +643,7 @@ export default function App() {
             busyUserUid={busyUserUid}
             error={usersError}
             onUpdateAccess={handleUpdateUserAccess}
+            onUpdateCourseAccess={handleUpdateCourseAccess}
           />
         )}
         adminProgressPanel={(
