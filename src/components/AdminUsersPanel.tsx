@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Ban, Check, Clock3, Search, ShieldCheck, UserCheck, UserX } from 'lucide-react';
-import { AcademyUser, AccessStatus } from '../types';
+import { AcademyUser, AccessStatus, CourseId, COURSE_IDS, COURSE_LABELS, LEGACY_COURSES } from '../types';
 
 interface AdminUsersPanelProps {
   users: AcademyUser[];
@@ -8,6 +8,7 @@ interface AdminUsersPanelProps {
   isLoading: boolean;
   busyUserUid: string;
   error: string;
+  onUpdateCourseAccess: (user: AcademyUser, courses: CourseId[]) => Promise<void>;
   onUpdateAccess: (user: AcademyUser, status: AccessStatus) => Promise<void>;
 }
 
@@ -32,6 +33,7 @@ export default function AdminUsersPanel({
   busyUserUid,
   error,
   onUpdateAccess,
+  onUpdateCourseAccess,
 }: AdminUsersPanelProps) {
   const [search, setSearch] = useState('');
   const normalizedSearch = search.trim().toLocaleLowerCase('es');
@@ -115,6 +117,22 @@ export default function AdminUsersPanel({
                     </span>
                   </div>
                 </div>
+
+                {user.role !== 'admin' && (
+                  <fieldset disabled={Boolean(busyUserUid)} className="border rounded-xl p-3 space-y-1">
+                    <legend className="text-xs font-bold">Talleres autorizados</legend>
+                    {COURSE_IDS.map(id => {
+                      const assigned = user.courseAccess ?? LEGACY_COURSES;
+                      return <label key={id} className="flex items-center gap-2 text-xs">
+                        <input type="checkbox" checked={assigned.includes(id)}
+                          onChange={event => void onUpdateCourseAccess(user, event.target.checked
+                            ? [...assigned, id] : assigned.filter(item => item !== id))} />
+                        {COURSE_LABELS[id]}
+                      </label>;
+                    })}
+                    <p className="text-[10px] text-gray-500">Los permisos se guardan automáticamente.</p>
+                  </fieldset>
+                )}
 
                 {isCurrentAdmin ? (
                   <span className="text-xs font-bold text-brand-green">Tu cuenta administradora</span>
