@@ -316,9 +316,20 @@ export default function App() {
       progressRef,
       (snapshot) => {
         if (!snapshot.exists()) {
-          setStats(initialStats);
-          localStorage.setItem(storageKey, JSON.stringify(initialStats));
-          void setDoc(progressRef, { ...initialStats, updatedAt: serverTimestamp() });
+          if (snapshot.metadata.fromCache) return;
+          // Never seed authoritative progress from an unverified browser cache.
+          const cleanStats: UserStats = {
+            username: profile.displayName,
+            completedLessons: [],
+            favoriteLessons: [],
+            joinedDate: new Date().toLocaleDateString('es-AR'),
+          };
+          void runTransaction(db!, async (transaction) => {
+            const existing = await transaction.get(progressRef);
+            if (!existing.exists()) {
+              transaction.set(progressRef, { ...cleanStats, updatedAt: serverTimestamp() });
+            }
+          }).catch((error) => console.error('No se pudo inicializar el progreso:', error));
           return;
         }
 
