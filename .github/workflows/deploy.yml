@@ -32,6 +32,12 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
+      - name: Generar iconos PWA
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+          node scripts/generate-icons.mjs
+
       - name: Compilar proyecto
         run: npm run build
 
