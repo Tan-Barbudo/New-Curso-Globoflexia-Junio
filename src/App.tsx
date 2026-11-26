@@ -320,9 +320,10 @@ export default function App() {
     const progressRef = doc(db, 'progress', authUser.uid);
     const unsubscribe = onSnapshot(
       progressRef,
+      { includeMetadataChanges: true },
       (snapshot) => {
+        if (snapshot.metadata.fromCache || snapshot.metadata.hasPendingWrites) return;
         if (!snapshot.exists()) {
-          if (snapshot.metadata.fromCache) return;
           // Never seed authoritative progress from an unverified browser cache.
           const cleanStats: UserStats = {
             username: profile.displayName,
