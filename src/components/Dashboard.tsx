@@ -432,6 +432,7 @@ export default function Dashboard({
                     <VideoPlayer
                       module={activeModule}
                       isCompleted={userStats.completedLessons.includes(activeModule.id)}
+                      courseCompleted={availableModules.length === 21 && availableModules.every(m => userStats.completedLessons.includes(m.id))}
                       onToggleComplete={onToggleLessonComplete}
                       onNavigateToDocs={() => setActiveTab('forum')}
                     />
