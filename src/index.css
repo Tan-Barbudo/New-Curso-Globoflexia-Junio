@@ -153,3 +153,25 @@ input:focus, textarea:focus, select:focus {
   background: #D97706;
 }
 
+
+/* Accessible academy surfaces and mobile interaction */
+.academy-hub, .academy-intro { background: #121212; color: #f5f5f4; }
+.academy-hub .text-gray-500, .academy-hub .text-gray-600,
+.academy-intro .text-gray-500, .academy-intro .text-gray-600,
+#dashboard-wrapper .text-gray-500, #dashboard-wrapper .text-gray-600 { color: #b5b0aa !important; }
+.academy-hub .text-gray-400, .academy-intro .text-gray-400,
+#dashboard-wrapper .text-gray-400 { color: #a8a29e !important; }
+button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #f59e0b; outline-offset: 3px; }
+button:disabled { cursor: not-allowed; }
+input[type="checkbox"] { accent-color: #d97706; width: 1.15rem; height: 1.15rem; flex-shrink: 0; }
+@media (max-width: 639px) {
+  #main-header > div { gap: 8px; padding-inline: 12px; }
+  #main-header > div > div { gap: 6px; }
+  #main-header button, .academy-hub header button, .academy-intro header button { min-height: 44px; min-width: 44px; }
+  #slogans-marquee > div { flex-wrap: wrap; gap: 6px 12px; font-size: 10px; }
+  #tab-selectors-navbar { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 8px; }
+  #tab-selectors-navbar button { flex-shrink: 0; min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
