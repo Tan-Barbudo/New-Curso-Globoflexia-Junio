@@ -16,4 +16,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - run: sudo apt-get update && sudo apt-get install -y imagemagick
+      - run: node scripts/generate-icons.mjs
       - run: npm run build
+      - run: test -s dist/icon-192.png && test -s dist/icon-512.png && test -s dist/manifest.webmanifest && test -s dist/sw.js
