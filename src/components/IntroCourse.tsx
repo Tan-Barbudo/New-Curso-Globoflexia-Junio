@@ -56,7 +56,7 @@ export default function IntroCourse({ title, subtitle, modules, accent, emoji = 
   };
 
   return (
-    <div className={`min-h-screen ${theme.page} text-brand-dark`}>
+    <div className="academy-intro min-h-screen text-brand-dark">
       <header className="bg-brand-dark text-white border-b-4 border-brand-dark">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <button onClick={onBack} className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-white/20 hover:bg-white/10 text-xs font-bold">
@@ -119,7 +119,7 @@ export default function IntroCourse({ title, subtitle, modules, accent, emoji = 
         </div>
 
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-5 items-start">
-          <aside className="bg-white border-3 border-brand-dark rounded-3xl p-3 sticker-shadow-sm space-y-2">
+          <aside className="order-2 lg:order-1 bg-white border-3 border-brand-dark rounded-3xl p-3 sticker-shadow-sm space-y-2">
             <p className="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">Contenido del taller</p>
             {modules.map((module, index) => {
               const unlocked = isUnlocked(index);
@@ -137,7 +137,7 @@ export default function IntroCourse({ title, subtitle, modules, accent, emoji = 
             })}
           </aside>
 
-          <section className="bg-white border-4 border-brand-dark rounded-3xl overflow-hidden sticker-shadow-lg">
+          <section className="order-1 lg:order-2 bg-white border-4 border-brand-dark rounded-3xl overflow-hidden sticker-shadow-lg">
             <div className={`h-2 ${theme.accent}`} />
             <div className="p-4 md:p-7">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
