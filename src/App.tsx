@@ -586,6 +586,7 @@ export default function App() {
     return (
       <IntroCourse
         title="Malabarismo básico"
+        plannedLessons={7}
         subtitle="Conoce qué son los malabares, un poco de su historia, sus beneficios y cómo comenzaremos este recorrido práctico paso a paso."
         modules={[
           { id: 'malabarismo-intro', title: 'Introducción al taller', videoId: 'zc1JKOOMzTM' },
@@ -603,6 +604,7 @@ export default function App() {
     return (
       <IntroCourse
         title="Evangelismo Creativo"
+        plannedLessons={7}
         subtitle="El mensaje no cambia, la forma sí. Descubre cómo utilizar recursos creativos para comunicar el evangelio con claridad y propósito."
         modules={[
           { id: 'evangelismo-intro', title: 'Introducción al taller', videoId: '66mdeXb5MAI', description: 'Conoce el recorrido del taller y cómo la creatividad puede ayudarnos a comunicar el evangelio con claridad.', learnPoints: ['Presentación del taller.', 'Propósito del evangelismo creativo.', 'Cómo aprovechar cada módulo.'] },
