@@ -130,8 +130,32 @@ service cloud.firestore {
     }
 
     match /progress/{userId} {
-      allow read, create, update, delete: if isApproved()
-        && (request.auth.uid == userId || isAdmin());
+      function validProgress(data) {
+        return data.keys().hasAll(['username', 'completedLessons', 'favoriteLessons', 'joinedDate', 'updatedAt'])
+          && data.keys().hasOnly(['username', 'completedLessons', 'favoriteLessons', 'joinedDate', 'updatedAt'])
+          && data.username is string && data.username.size() <= 150
+          && data.joinedDate is string && data.joinedDate.size() <= 100
+          && data.completedLessons is list
+          && data.favoriteLessons is list
+          && data.completedLessons.size() <= 200
+          && data.favoriteLessons.size() <= 200
+          && data.completedLessons.toSet().size() == data.completedLessons.size()
+          && data.favoriteLessons.toSet().size() == data.favoriteLessons.size()
+          && data.completedLessons.hasOnly([
+            'intro', 'mod-1', 'mod-2', 'mod-3', 'mod-4', 'mod-5', 'mod-6',
+            'mod-7', 'mod-8', 'mod-9', 'mod-10', 'mod-11', 'mod-12', 'mod-13',
+            'mod-14', 'mod-15', 'mod-16', 'bonus-1', 'bonus-2', 'bonus-3', 'bonus-4',
+            'malabarismo-intro', 'evangelismo-intro', 'evangelismo-mod-1',
+            'evangelismo-mod-2', 'evangelismo-mod-3', 'evangelismo-mod-4'
+          ])
+          && data.updatedAt == request.time;
+      }
+
+      allow read: if isApproved() && (request.auth.uid == userId || isAdmin());
+      allow create, update: if isApproved()
+        && (request.auth.uid == userId || isAdmin())
+        && validProgress(request.resource.data);
+      allow delete: if isAdmin();
     }
 
     match /{document=**} {
