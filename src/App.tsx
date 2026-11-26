@@ -527,6 +527,15 @@ export default function App() {
     }
   };
 
+  const adminUsersView = profile?.role === 'admin' && authUser ? (
+    <AdminUsersPanel users={academyUsers} currentUserUid={authUser.uid} isLoading={usersLoading}
+      busyUserUid={busyUserUid} error={usersError} onUpdateAccess={handleUpdateUserAccess}
+      onUpdateCourseAccess={handleUpdateCourseAccess} />
+  ) : null;
+  const adminProgressView = profile?.role === 'admin' ? (
+    <AdminProgressPanel users={academyUsers} progress={academyProgress} modules={modules}
+      isLoading={usersLoading || progressLoading} error={progressError} />
+  ) : null;
   const allDocuments: DocumentAsset[] = [];
   const seenDocIds = new Set<string>();
   modules.forEach((module) => {
@@ -570,6 +579,17 @@ export default function App() {
     return <AccessStatus profile={profile} onLogout={handleLogout} />;
   }
 
+  if (selectedCourseId === 'admin' && profile.role === 'admin') {
+    return <div className="academy-hub min-h-screen">
+      <main className="max-w-6xl mx-auto px-4 py-6 space-y-5">
+        <button onClick={() => setSelectedCourseId(null)} className="px-4 py-3 border rounded-xl text-sm font-bold">← Volver a los talleres</button>
+        <h1 className="font-display text-3xl font-bold">Panel de administración</h1>
+        {adminUsersView}
+        {adminProgressView}
+      </main>
+    </div>;
+  }
+
   if (!selectedCourseId || !hasCourseAccess(profile, selectedCourseId)) {
     return (
       <LearningHub
@@ -577,6 +597,7 @@ export default function App() {
         modules={modules}
         stats={stats}
         onOpenCourse={setSelectedCourseId}
+        onOpenAdmin={() => setSelectedCourseId('admin')}
         onLogout={handleLogout}
       />
     );
