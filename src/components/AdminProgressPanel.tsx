@@ -30,10 +30,9 @@ export default function AdminProgressPanel({ users, progress, modules, isLoading
       const lastCompleted = [...availableModules]
         .reverse()
         .find((module) => completedIds.includes(module.id));
-      const certificateReady = Boolean(
-        modules.find((module) => module.id === 'bonus-4')?.videoUrl
-        && completedIds.includes('bonus-4'),
-      );
+      const certificateReady = totalLessons > 0
+        && availableModules.some((module) => module.id === 'bonus-4')
+        && availableModules.every((module) => completedIds.includes(module.id));
 
       return { user, studentProgress, completedCount, percent, lastCompleted, certificateReady };
     })
