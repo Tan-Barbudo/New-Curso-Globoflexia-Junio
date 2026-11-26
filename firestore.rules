@@ -151,10 +151,49 @@ service cloud.firestore {
           && data.updatedAt == request.time;
       }
 
+      // Validate newly added lessons without invalidating historical progress.
+      function validAdvance(previous, next) {
+        let added = next.toSet().difference(previous.toSet());
+        let removed = previous.toSet().difference(next.toSet());
+        return added.size() + removed.size() <= 1
+          && (!added.hasAny(['mod-1']) || previous.hasAny(['intro']))
+          && (!added.hasAny(['mod-2']) || previous.hasAny(['mod-1']))
+          && (!added.hasAny(['mod-3']) || previous.hasAny(['mod-2']))
+          && (!added.hasAny(['mod-4']) || previous.hasAny(['mod-3']))
+          && (!added.hasAny(['mod-5']) || previous.hasAny(['mod-4']))
+          && (!added.hasAny(['mod-6']) || previous.hasAny(['mod-5']))
+          && (!added.hasAny(['mod-7']) || previous.hasAny(['mod-6']))
+          && (!added.hasAny(['mod-8']) || previous.hasAny(['mod-7']))
+          && (!added.hasAny(['mod-9']) || previous.hasAny(['mod-8']))
+          && (!added.hasAny(['mod-10']) || previous.hasAny(['mod-9']))
+          && (!added.hasAny(['mod-11']) || previous.hasAny(['mod-10']))
+          && (!added.hasAny(['mod-12']) || previous.hasAny(['mod-11']))
+          && (!added.hasAny(['mod-13']) || previous.hasAny(['mod-12']))
+          && (!added.hasAny(['mod-14']) || previous.hasAny(['mod-13']))
+          && (!added.hasAny(['mod-15']) || previous.hasAny(['mod-14']))
+          && (!added.hasAny(['mod-16']) || previous.hasAny(['mod-15']))
+          && (!added.hasAny(['bonus-1']) || previous.hasAny(['mod-16']))
+          && (!added.hasAny(['bonus-2']) || previous.hasAny(['bonus-1']))
+          && (!added.hasAny(['bonus-3']) || previous.hasAny(['bonus-2']))
+          && (!added.hasAny(['bonus-4']) || previous.hasAny(['bonus-3']))
+          && (!added.hasAny(['evangelismo-mod-1']) || previous.hasAny(['evangelismo-intro']))
+          && (!added.hasAny(['evangelismo-mod-2']) || previous.hasAny(['evangelismo-mod-1']))
+          && (!added.hasAny(['evangelismo-mod-3']) || previous.hasAny(['evangelismo-mod-2']))
+          && (!added.hasAny(['evangelismo-mod-4']) || previous.hasAny(['evangelismo-mod-3']));
+      }
+
       allow read: if isApproved() && (request.auth.uid == userId || isAdmin());
-      allow create, update: if isApproved()
+      allow create: if isApproved()
         && (request.auth.uid == userId || isAdmin())
-        && validProgress(request.resource.data);
+        && validProgress(request.resource.data)
+        && (isAdmin() || request.resource.data.completedLessons.size() == 0);
+      allow update: if isApproved()
+        && (request.auth.uid == userId || isAdmin())
+        && validProgress(request.resource.data)
+        && (isAdmin() || (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['completedLessons', 'updatedAt'])
+          && validAdvance(resource.data.completedLessons, request.resource.data.completedLessons)
+        ));
       allow delete: if isAdmin();
     }
 
