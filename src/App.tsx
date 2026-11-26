@@ -97,6 +97,8 @@ export default function App() {
       unsubscribeProfile?.();
       unsubscribeProfile = undefined;
       setAuthUser(user);
+      setSelectedCourseId(null);
+      setStats({ username: '', completedLessons: [], favoriteLessons: [], joinedDate: new Date().toLocaleDateString('es-AR') });
       setProfile(null);
       setAuthError('');
 
