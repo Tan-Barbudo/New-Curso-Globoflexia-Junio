@@ -21,6 +21,7 @@ interface IntroCourseProps {
   accent: 'blue' | 'green';
   emoji?: string;
   completedLessons: string[];
+  plannedLessons: number;
   onToggleComplete: (moduleId: string) => void;
   onBack: () => void;
 }
@@ -30,7 +31,7 @@ const themes = {
   green: { page: 'bg-[#F5FFF8]', accent: 'bg-brand-green', soft: 'bg-brand-green/10 text-brand-green border-brand-green/30', button: 'bg-brand-green hover:bg-green-600', active: 'border-brand-green bg-brand-green/10' },
 };
 
-export default function IntroCourse({ title, subtitle, modules, accent, emoji = '✨', completedLessons, onToggleComplete, onBack }: IntroCourseProps) {
+export default function IntroCourse({ title, subtitle, modules, accent, emoji = '✨', completedLessons, plannedLessons, onToggleComplete, onBack }: IntroCourseProps) {
   const theme = themes[accent];
   const isUnlocked = (index: number) => index === 0 || completedLessons.includes(modules[index - 1].id);
   const firstPending = modules.findIndex((module, index) => isUnlocked(index) && !completedLessons.includes(module.id));
@@ -39,16 +40,19 @@ export default function IntroCourse({ title, subtitle, modules, accent, emoji = 
   const activeModule = modules[activeIndex];
   const activeCompleted = completedLessons.includes(activeModule.id);
   const completedCount = modules.filter((module) => completedLessons.includes(module.id)).length;
-  const progress = Math.round((completedCount / modules.length) * 100);
+  const progress = Math.round((completedCount / plannedLessons) * 100);
 
   useEffect(() => {
     if (!isUnlocked(activeIndex)) setActiveModuleId(modules[0].id);
   }, [completedLessons, activeIndex, modules]);
 
   const nextModule = useMemo(() => modules[activeIndex + 1], [activeIndex, modules]);
+  useEffect(() => {
+    if (activeCompleted && nextModule && !completedLessons.includes(nextModule.id)) setActiveModuleId(nextModule.id);
+  }, [activeCompleted, nextModule, completedLessons]);
   const toggleAndAdvance = () => {
     onToggleComplete(activeModule.id);
-    if (!activeCompleted && nextModule) setActiveModuleId(nextModule.id);
+    // Advance only after the confirmed completion reaches the component.
   };
 
   return (
@@ -81,8 +85,8 @@ export default function IntroCourse({ title, subtitle, modules, accent, emoji = 
             </div>
             <div className="grid grid-cols-2 md:grid-cols-1 gap-3 min-w-[150px]">
               <div className="rounded-2xl bg-white/10 border border-white/15 p-4 text-center">
-                <p className="font-display text-2xl font-black">{modules.length}</p>
-                <p className="text-[9px] uppercase tracking-widest text-gray-400">Clases</p>
+                <p className="font-display text-2xl font-black">{plannedLessons}</p>
+                <p className="text-[9px] uppercase tracking-widest text-gray-400">Clases previstas</p>
               </div>
               <div className="rounded-2xl bg-white/10 border border-white/15 p-4 text-center">
                 <p className="font-display text-2xl font-black">{progress}%</p>
@@ -91,11 +95,18 @@ export default function IntroCourse({ title, subtitle, modules, accent, emoji = 
             </div>
           </div>
           <div className="relative mt-6">
-            <div className="flex justify-between text-[10px] font-bold mb-2"><span>{completedCount} de {modules.length} módulos</span><span>{progress}%</span></div>
+            <div className="flex justify-between text-[10px] font-bold mb-2"><span>{completedCount} de {plannedLessons} clases previstas</span><span>{progress}%</span></div>
             <div className="h-2.5 bg-white/10 rounded-full overflow-hidden"><div className={`h-full ${theme.accent} transition-all`} style={{ width: `${progress}%` }} /></div>
           </div>
         </section>
 
+        {modules.length < plannedLessons && <p className="mt-4 text-sm text-gray-600">Has accedido a {modules.length} de {plannedLessons} clases previstas. Las restantes se publicarán próximamente.</p>}
+        {modules.length === plannedLessons && completedCount === plannedLessons && (
+          <div className="mt-4 p-4 bg-white border-2 border-brand-green rounded-2xl">
+            <p className="font-bold">¡Felicitaciones! Completaste el taller.</p>
+            <a href="https://wa.me/message/4KJH22ULJCVYH1" target="_blank" rel="noopener noreferrer" className="underline font-bold text-brand-green">Solicitar certificado por WhatsApp</a>
+          </div>
+        )}
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="bg-white border-2 border-brand-dark rounded-2xl p-4 flex items-center gap-3">
             <BookOpen className="w-8 h-8 text-brand-green flex-shrink-0" />
