@@ -23,6 +23,11 @@ service cloud.firestore {
       return isApproved() && currentUser().role == 'admin';
     }
 
+    function hasCourseAccess(courseId) {
+      return isApproved() && (isAdmin() ||
+        currentUser().get('courseAccess', ['globoflexia', 'malabarismo', 'evangelismo']).hasAny([courseId]));
+    }
+
     function isValidCategory(category) {
       return category in ['Duda', 'Logro', 'Inspiración', 'General'];
     }
@@ -99,11 +104,17 @@ service cloud.firestore {
 
       allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
       allow list: if isAdmin();
-      allow update, delete: if isAdmin();
+      allow update: if isAdmin()
+        && (!request.resource.data.keys().hasAny(['courseAccess']) ||
+          (request.resource.data.courseAccess is list
+            && request.resource.data.courseAccess.size() <= 5
+            && request.resource.data.courseAccess.toSet().size() == request.resource.data.courseAccess.size()
+            && request.resource.data.courseAccess.hasOnly(['globoflexia', 'malabarismo', 'evangelismo', 'trucos', 'clown'])));
+      allow delete: if isAdmin();
     }
 
     match /modules/{moduleId} {
-      allow read: if isApproved();
+      allow read: if hasCourseAccess('globoflexia');
       allow create, update, delete: if isAdmin();
     }
 
@@ -155,7 +166,11 @@ service cloud.firestore {
       function validAdvance(previous, next) {
         let added = next.toSet().difference(previous.toSet());
         let removed = previous.toSet().difference(next.toSet());
+        let changed = added.union(removed);
         return added.size() + removed.size() <= 1
+          && (!changed.hasAny(['intro', 'mod-1', 'mod-2', 'mod-3', 'mod-4', 'mod-5', 'mod-6', 'mod-7', 'mod-8', 'mod-9', 'mod-10', 'mod-11', 'mod-12', 'mod-13', 'mod-14', 'mod-15', 'mod-16', 'bonus-1', 'bonus-2', 'bonus-3', 'bonus-4']) || hasCourseAccess('globoflexia'))
+          && (!changed.hasAny(['malabarismo-intro']) || hasCourseAccess('malabarismo'))
+          && (!changed.hasAny(['evangelismo-intro', 'evangelismo-mod-1', 'evangelismo-mod-2', 'evangelismo-mod-3', 'evangelismo-mod-4']) || hasCourseAccess('evangelismo'))
           && (!added.hasAny(['mod-1']) || previous.hasAny(['intro']))
           && (!added.hasAny(['mod-2']) || previous.hasAny(['mod-1']))
           && (!added.hasAny(['mod-3']) || previous.hasAny(['mod-2']))
