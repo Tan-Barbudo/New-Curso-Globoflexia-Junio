@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Award, BookOpen, CheckCircle2, Clock3, Search, TrendingUp, UserRound } from 'lucide-react';
-import { AcademyUser, AdminStudentProgress, LessonModule } from '../types';
+import { AcademyUser, AdminStudentProgress, LessonModule, hasCourseAccess } from '../types';
 
 interface AdminProgressPanelProps {
   users: AcademyUser[];
@@ -24,13 +24,13 @@ export default function AdminProgressPanel({ users, progress, modules, isLoading
     .filter((user) => user.role !== 'admin' && user.status === 'approved')
     .map((user) => {
       const studentProgress = progressByUserId.get(user.uid);
-      const completedIds = studentProgress?.completedLessons.filter((id) => availableIds.has(id)) || [];
+      const completedIds = [...new Set(studentProgress?.completedLessons.filter((id) => availableIds.has(id)) || [])];
       const completedCount = completedIds.length;
       const percent = totalLessons ? Math.round((completedCount / totalLessons) * 100) : 0;
       const lastCompleted = [...availableModules]
         .reverse()
         .find((module) => completedIds.includes(module.id));
-      const certificateReady = totalLessons > 0
+      const certificateReady = totalLessons === 21 && hasCourseAccess(user, 'globoflexia')
         && availableModules.some((module) => module.id === 'bonus-4')
         && availableModules.every((module) => completedIds.includes(module.id));
 
@@ -110,6 +110,21 @@ export default function AdminProgressPanel({ users, progress, modules, isLoading
                 </div>
               </div>
 
+              <div className="grid gap-2 sm:grid-cols-2">
+                {[
+                  {id: 'malabarismo', label: 'Malabarismo básico', ids: ['malabarismo-intro'], total: 7},
+                  {id: 'evangelismo', label: 'Evangelismo creativo', ids: ['evangelismo-intro', 'evangelismo-mod-1', 'evangelismo-mod-2', 'evangelismo-mod-3', 'evangelismo-mod-4'], total: 7},
+                ].map(course => {
+                  const count = course.ids.filter(id => studentProgress?.completedLessons.includes(id)).length;
+                  const percent = Math.round(count / course.total * 100);
+                  return <div key={course.id} className="rounded-xl border border-gray-200 p-3">
+                    <p className="text-xs font-bold">{course.label}</p>
+                    <p className="text-[10px] text-gray-500">{hasCourseAccess(user, course.id) ? 'Autorizado' : 'Sin acceso'} · {count}/{course.total} clases · {percent}%</p>
+                    <div className="h-2 mt-2 rounded-full bg-gray-100 overflow-hidden"><div className="h-full bg-brand-green" style={{width: percent + '%'}} /></div>
+                  </div>;
+                })}
+              </div>
+              <p className="text-xs font-bold">Globoflexia · {hasCourseAccess(user, 'globoflexia') ? 'Autorizado' : 'Sin acceso'}</p>
               <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-center">
                 <div>
                   <div className="flex justify-between text-[10px] font-bold text-gray-500 mb-1.5">
