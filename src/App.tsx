@@ -31,6 +31,10 @@ import { MODULES_DATA } from './data/courseData';
 import { auth, db, isFirebaseConfigured } from './firebase';
 import {
   AcademyUser,
+  CourseId,
+  COURSE_IDS,
+  hasCourseAccess,
+  parseCourseAccess,
   AdminStudentProgress,
   DocumentAsset,
   ForumComment,
@@ -93,6 +97,8 @@ export default function App() {
       unsubscribeProfile?.();
       unsubscribeProfile = undefined;
       setAuthUser(user);
+      setSelectedCourseId(null);
+      setStats({ username: '', completedLessons: [], favoriteLessons: [], joinedDate: new Date().toLocaleDateString('es-AR') });
       setProfile(null);
       setAuthError('');
 
@@ -136,6 +142,7 @@ export default function App() {
               photoURL: String(data.photoURL || avatarFor(user)),
               status: data.status,
               role: data.role,
+              courseAccess: parseCourseAccess(data.courseAccess),
             });
             setAuthLoading(false);
           },
@@ -236,6 +243,7 @@ export default function App() {
             photoURL: String(data.photoURL || ''),
             status: data.status,
             role: data.role,
+              courseAccess: parseCourseAccess(data.courseAccess),
           } as AcademyUser;
         });
         nextUsers.sort((a, b) => {
@@ -314,11 +322,23 @@ export default function App() {
     const progressRef = doc(db, 'progress', authUser.uid);
     const unsubscribe = onSnapshot(
       progressRef,
+      { includeMetadataChanges: true },
       (snapshot) => {
+        if (snapshot.metadata.fromCache || snapshot.metadata.hasPendingWrites) return;
         if (!snapshot.exists()) {
-          setStats(initialStats);
-          localStorage.setItem(storageKey, JSON.stringify(initialStats));
-          void setDoc(progressRef, { ...initialStats, updatedAt: serverTimestamp() });
+          // Never seed authoritative progress from an unverified browser cache.
+          const cleanStats: UserStats = {
+            username: profile.displayName,
+            completedLessons: [],
+            favoriteLessons: [],
+            joinedDate: new Date().toLocaleDateString('es-AR'),
+          };
+          void runTransaction(db!, async (transaction) => {
+            const existing = await transaction.get(progressRef);
+            if (!existing.exists()) {
+              transaction.set(progressRef, { ...cleanStats, updatedAt: serverTimestamp() });
+            }
+          }).catch((error) => console.error('No se pudo inicializar el progreso:', error));
           return;
         }
 
@@ -380,20 +400,34 @@ export default function App() {
   const handleToggleComplete = async (moduleId: string) => {
     if (!authUser || profile?.status !== 'approved' || !db) return;
 
-    const completedLessons = stats.completedLessons.includes(moduleId)
-      ? stats.completedLessons.filter((id) => id !== moduleId)
-      : [...stats.completedLessons, moduleId];
-    const updatedStats = { ...stats, completedLessons };
-    setStats(updatedStats);
-    localStorage.setItem(`tb_stats_${authUser.uid}`, JSON.stringify(updatedStats));
+    const courseIds = selectedCourseId === 'malabarismo'
+      ? ['malabarismo-intro']
+      : selectedCourseId === 'evangelismo'
+        ? ['evangelismo-intro', 'evangelismo-mod-1', 'evangelismo-mod-2', 'evangelismo-mod-3', 'evangelismo-mod-4']
+        : modules.filter((module) => Boolean(module.videoUrl)).map((module) => module.id);
+    const index = courseIds.indexOf(moduleId);
+    if (index < 0 || !hasCourseAccess(profile, selectedCourseId || 'globoflexia')) return;
     try {
-      await setDoc(
-        doc(db, 'progress', authUser.uid),
-        { ...updatedStats, updatedAt: serverTimestamp() },
-        { merge: true },
-      );
+      const progressRef = doc(db, 'progress', authUser.uid);
+      await runTransaction(db, async (transaction) => {
+        const snapshot = await transaction.get(progressRef);
+        if (!snapshot.exists()) throw new Error('El progreso aún no está inicializado.');
+        const data = snapshot.data();
+        const completed: string[] = Array.isArray(data.completedLessons)
+          ? [...new Set<string>(data.completedLessons.filter((id: unknown): id is string => typeof id === 'string'))]
+          : [];
+        if (!completed.includes(moduleId) && index > 0 && !completed.includes(courseIds[index - 1])) {
+          throw new Error('Completa primero la lección anterior.');
+        }
+        const completedLessons = completed.includes(moduleId)
+          ? completed.filter((id) => id !== moduleId)
+          : [...completed, moduleId];
+        transaction.update(progressRef, { completedLessons, updatedAt: serverTimestamp() });
+      });
+      // The Firestore listener updates the UI and local cache after confirmation.
     } catch (error) {
       console.error('No se pudo guardar el progreso:', error);
+      window.alert('No se pudo guardar el progreso. Comprueba tu conexión y vuelve a intentarlo.');
     }
   };
 
@@ -478,6 +512,32 @@ export default function App() {
     }
   };
 
+  const handleUpdateCourseAccess = async (user: AcademyUser, courses: CourseId[]) => {
+    if (!authUser || profile?.status !== 'approved' || profile.role !== 'admin' || !db || user.role === 'admin') return;
+    setBusyUserUid(user.uid);
+    setUsersError('');
+    try {
+      await updateDoc(doc(db, 'users', user.uid), {
+        courseAccess: COURSE_IDS.filter(id => courses.includes(id)),
+        updatedAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error('No se pudieron guardar los talleres:', error);
+      setUsersError('No se pudieron guardar los permisos. Inténtalo nuevamente.');
+    } finally {
+      setBusyUserUid('');
+    }
+  };
+
+  const adminUsersView = profile?.role === 'admin' && authUser ? (
+    <AdminUsersPanel users={academyUsers} currentUserUid={authUser.uid} isLoading={usersLoading}
+      busyUserUid={busyUserUid} error={usersError} onUpdateAccess={handleUpdateUserAccess}
+      onUpdateCourseAccess={handleUpdateCourseAccess} />
+  ) : null;
+  const adminProgressView = profile?.role === 'admin' ? (
+    <AdminProgressPanel users={academyUsers} progress={academyProgress} modules={modules}
+      isLoading={usersLoading || progressLoading} error={progressError} />
+  ) : null;
   const allDocuments: DocumentAsset[] = [];
   const seenDocIds = new Set<string>();
   modules.forEach((module) => {
@@ -521,13 +581,25 @@ export default function App() {
     return <AccessStatus profile={profile} onLogout={handleLogout} />;
   }
 
-  if (!selectedCourseId) {
+  if (selectedCourseId === 'admin' && profile.role === 'admin') {
+    return <div className="academy-hub min-h-screen">
+      <main className="max-w-6xl mx-auto px-4 py-6 space-y-5">
+        <button onClick={() => setSelectedCourseId(null)} className="px-4 py-3 border rounded-xl text-sm font-bold">← Volver a los talleres</button>
+        <h1 className="font-display text-3xl font-bold">Panel de administración</h1>
+        {adminUsersView}
+        {adminProgressView}
+      </main>
+    </div>;
+  }
+
+  if (!selectedCourseId || !hasCourseAccess(profile, selectedCourseId)) {
     return (
       <LearningHub
         profile={profile}
         modules={modules}
         stats={stats}
         onOpenCourse={setSelectedCourseId}
+        onOpenAdmin={() => setSelectedCourseId('admin')}
         onLogout={handleLogout}
       />
     );
@@ -537,6 +609,7 @@ export default function App() {
     return (
       <IntroCourse
         title="Malabarismo básico"
+        plannedLessons={7}
         subtitle="Conoce qué son los malabares, un poco de su historia, sus beneficios y cómo comenzaremos este recorrido práctico paso a paso."
         modules={[
           { id: 'malabarismo-intro', title: 'Introducción al taller', videoId: 'zc1JKOOMzTM' },
@@ -554,6 +627,7 @@ export default function App() {
     return (
       <IntroCourse
         title="Evangelismo Creativo"
+        plannedLessons={7}
         subtitle="El mensaje no cambia, la forma sí. Descubre cómo utilizar recursos creativos para comunicar el evangelio con claridad y propósito."
         modules={[
           { id: 'evangelismo-intro', title: 'Introducción al taller', videoId: '66mdeXb5MAI', description: 'Conoce el recorrido del taller y cómo la creatividad puede ayudarnos a comunicar el evangelio con claridad.', learnPoints: ['Presentación del taller.', 'Propósito del evangelismo creativo.', 'Cómo aprovechar cada módulo.'] },
@@ -595,6 +669,7 @@ export default function App() {
             busyUserUid={busyUserUid}
             error={usersError}
             onUpdateAccess={handleUpdateUserAccess}
+            onUpdateCourseAccess={handleUpdateCourseAccess}
           />
         )}
         adminProgressPanel={(

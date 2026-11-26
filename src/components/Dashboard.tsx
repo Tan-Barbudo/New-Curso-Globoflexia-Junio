@@ -62,7 +62,7 @@ export default function Dashboard({
   adminProgressPanel,
 }: DashboardProps) {
   const [activeTab, setActiveTab] = useState<'video' | 'forum' | 'game' | 'users' | 'progress'>('video');
-  const [selectedModuleId, setSelectedModuleId] = useState<string>('intro');
+  const [selectedModuleId, setSelectedModuleId] = useState<string>(() => modulesData.find(m => Boolean(m.videoUrl) && !userStats.completedLessons.includes(m.id))?.id || 'intro');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const regularModules = modulesData.filter((m) => !m.isBonus);
@@ -83,7 +83,7 @@ export default function Dashboard({
 
   const totalLessonsCount = availableModules.length;
   const completedCount = userStats.completedLessons.filter((moduleId) => availableModuleIds.has(moduleId)).length;
-  const progressPercent = Math.round((completedCount / totalLessonsCount) * 100);
+  const progressPercent = totalLessonsCount ? Math.round((completedCount / totalLessonsCount) * 100) : 0;
   const nextModule = availableModules.find((module) => !userStats.completedLessons.includes(module.id));
   const nextStepLabel = !nextModule
     ? '¡Recorrido completado!'
@@ -162,7 +162,7 @@ export default function Dashboard({
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="lg:hidden p-2 hover:bg-white/10 rounded-xl border border-white/20"
-              id="hamburger-menu"
+              id="hamburger-menu" aria-label="Abrir o cerrar módulos" aria-expanded={sidebarOpen} aria-controls="course-sidebar-navigation"
             >
               <Menu className="w-5 h-5 text-white" />
             </button>
@@ -170,7 +170,7 @@ export default function Dashboard({
             <button
               onClick={onBackToCourses}
               className="p-2 hover:bg-white/10 rounded-xl border border-white/20 flex items-center gap-2"
-              title="Volver a Aprende con Tan"
+              title="Volver a Aprende con Tan" aria-label="Volver a los talleres"
             >
               <LayoutGrid className="w-5 h-5 text-brand-yellow" />
               <span className="hidden lg:inline text-[10px] font-bold uppercase tracking-wider">Cursos</span>
@@ -183,7 +183,7 @@ export default function Dashboard({
                 className="w-12 h-12 rounded-full border-2 border-white bg-white object-contain"
               />
 
-              <div className="bg-brand-red text-white text-base md:text-xl font-display font-bold px-3 py-1.5 rounded-xl border border-brand-yellow transform -rotate-1 tracking-tight">
+              <div className="hidden sm:block bg-brand-red text-white text-base md:text-xl font-display font-bold px-3 py-1.5 rounded-xl border border-brand-yellow transform -rotate-1 tracking-tight">
                 <span className="text-brand-yellow">T</span>AN <span className="text-brand-green">B</span>ARBUDO
               </div>
 
@@ -220,7 +220,7 @@ export default function Dashboard({
               onClick={onLogout}
               id="logout-button"
               className="p-2 ml-1 bg-brand-red/20 border border-brand-red/30 rounded-xl cursor-pointer hover:bg-brand-red text-brand-red hover:text-white transition-all text-xs font-bold flex items-center gap-1"
-              title="Salir del aula"
+              title="Salir del aula" aria-label="Cerrar sesión"
             >
               <LogOut className="w-4 h-4" />
               <span className="hidden md:inline">Salir</span>
@@ -432,6 +432,7 @@ export default function Dashboard({
                     <VideoPlayer
                       module={activeModule}
                       isCompleted={userStats.completedLessons.includes(activeModule.id)}
+                      courseCompleted={availableModules.length === 21 && availableModules.every(m => userStats.completedLessons.includes(m.id))}
                       onToggleComplete={onToggleLessonComplete}
                       onNavigateToDocs={() => setActiveTab('forum')}
                     />

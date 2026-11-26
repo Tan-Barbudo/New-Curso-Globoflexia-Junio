@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "Aprende con Tan",
+  "short_name": "Aprende con Tan",
+  "lang": "es",
+  "description": "Talleres creativos con Tan Barbudo",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

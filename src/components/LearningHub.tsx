@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, CircleDot, Dices, Drama, HeartHandshake, LogOut, Sparkles } from 'lucide-react';
-import { AcademyUser, LessonModule, UserStats } from '../types';
+import { AcademyUser, LessonModule, UserStats, hasCourseAccess } from '../types';
 
 interface LearningHubProps {
   profile: AcademyUser;
@@ -8,6 +8,7 @@ interface LearningHubProps {
   stats: UserStats;
   onOpenCourse: (courseId: string) => void;
   onLogout: () => void;
+  onOpenAdmin: () => void;
 }
 
 const additionalCourses = [
@@ -20,6 +21,7 @@ const additionalCourses = [
     background: 'bg-brand-blue/10',
     available: true,
     moduleIds: ['malabarismo-intro'],
+    plannedLessons: 7,
   },
   {
     id: 'trucos',
@@ -48,16 +50,25 @@ const additionalCourses = [
     background: 'bg-brand-green/10',
     available: true,
     moduleIds: ['evangelismo-intro', 'evangelismo-mod-1', 'evangelismo-mod-2', 'evangelismo-mod-3', 'evangelismo-mod-4'],
+    plannedLessons: 7,
   },
 ];
 
-export default function LearningHub({ profile, modules, stats, onOpenCourse, onLogout }: LearningHubProps) {
+export default function LearningHub({ profile, modules, stats, onOpenCourse, onLogout, onOpenAdmin }: LearningHubProps) {
+  const globoflexiaAccess = hasCourseAccess(profile, 'globoflexia');
   const availableModules = modules.filter((module) => Boolean(module.videoUrl));
   const completedCount = stats.completedLessons.filter((id) => availableModules.some((module) => module.id === id)).length;
   const progress = availableModules.length ? Math.round((completedCount / availableModules.length) * 100) : 0;
 
+  const [filter, setFilter] = React.useState<'all' | 'mine'>('all');
+  const visibleCourses = additionalCourses.filter(course => filter === 'all' || (course.available && hasCourseAccess(profile, course.id)));
+  const resumable = [
+    { id: 'globoflexia', label: 'Globoflexia', ids: availableModules.map(m => m.id) },
+    ...additionalCourses.filter(c => c.available).map(c => ({id: c.id, label: c.title, ids: c.moduleIds || []})),
+  ].find(c => hasCourseAccess(profile, c.id) && c.ids.some(id => stats.completedLessons.includes(id)) && c.ids.some(id => !stats.completedLessons.includes(id)));
+
   return (
-    <div className="min-h-screen bg-[#FFFDF9] text-brand-dark">
+    <div className="academy-hub min-h-screen text-brand-dark">
       <header className="bg-brand-dark text-white border-b-4 border-brand-dark">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -72,7 +83,7 @@ export default function LearningHub({ profile, modules, stats, onOpenCourse, onL
               <p className="text-xs font-bold">{profile.displayName}</p>
               <p className="text-[9px] uppercase tracking-wider text-brand-yellow">{profile.role === 'admin' ? 'Administrador' : 'Alumno'}</p>
             </div>
-            <button onClick={onLogout} className="p-2 rounded-xl border border-white/20 hover:bg-white/10" title="Cerrar sesión">
+            <button onClick={onLogout} className="p-2 rounded-xl border border-white/20 hover:bg-white/10" title="Cerrar sesión" aria-label="Cerrar sesión">
               <LogOut className="w-5 h-5" />
             </button>
           </div>
@@ -90,11 +101,23 @@ export default function LearningHub({ profile, modules, stats, onOpenCourse, onL
           </p>
         </div>
 
+        {profile.role === 'admin' && (
+          <button onClick={onOpenAdmin} className="mb-5 w-full sm:w-auto px-5 py-3 rounded-xl border border-brand-yellow font-bold text-sm text-brand-yellow">Panel de administración</button>
+        )}
+        {resumable && <button onClick={() => onOpenCourse(resumable.id)} className="mb-6 w-full flex items-center justify-between gap-3 rounded-2xl bg-brand-yellow/10 border border-brand-yellow px-5 py-4 text-left">
+          <span><span className="block text-xs text-brand-yellow font-bold">CONTINÚA APRENDIENDO</span><span className="block font-bold mt-1">{resumable.label}</span></span><ArrowRight className="w-5 h-5 shrink-0"/>
+        </button>}
+        <div className="flex flex-wrap gap-2 mb-5" aria-label="Filtrar talleres">
+          {([['all','Todos los talleres'],['mine','Mis talleres']] as const).map(([id,label]) =>
+            <button key={id} aria-pressed={filter === id} onClick={() => setFilter(id)} className={`px-4 py-3 rounded-xl text-sm font-bold border ${filter === id ? 'bg-brand-yellow text-white' : 'bg-white'}`}>{label}</button>
+          )}
+        </div>
+        {filter === 'mine' && !globoflexiaAccess && visibleCourses.length === 0 && <p className="py-8 text-gray-500">Aún no tienes talleres disponibles. Solicita acceso al administrador.</p>}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <button onClick={() => onOpenCourse('globoflexia')} className="text-left bg-brand-dark text-white border-4 border-brand-dark rounded-3xl p-6 sticker-shadow-lg group md:row-span-2 flex flex-col justify-between min-h-[330px]">
+          {(filter === 'all' || globoflexiaAccess) && <button disabled={!globoflexiaAccess} onClick={() => onOpenCourse('globoflexia')} className="text-left bg-brand-dark text-white border-4 border-brand-dark rounded-3xl p-6 sticker-shadow-lg group md:row-span-2 flex flex-col justify-between min-h-[330px]">
             <div>
               <div className="w-16 h-16 rounded-2xl bg-brand-yellow flex items-center justify-center text-4xl border-2 border-white/30">🎈</div>
-              <span className="inline-flex mt-5 px-3 py-1 bg-brand-green text-white rounded-full text-[9px] font-bold uppercase tracking-wider">Disponible</span>
+              <span className="inline-flex mt-5 px-3 py-1 bg-brand-green text-white rounded-full text-[9px] font-bold uppercase tracking-wider">{globoflexiaAccess ? 'Disponible' : 'Sin acceso'}</span>
               <h2 className="font-display text-3xl font-black mt-3">Globoflexia</h2>
               <p className="text-sm text-gray-300 mt-2 leading-relaxed">Técnicas, figuras, personajes, eventos y cuatro bonus especiales.</p>
             </div>
@@ -102,24 +125,25 @@ export default function LearningHub({ profile, modules, stats, onOpenCourse, onL
               <div className="flex justify-between text-[10px] font-bold mb-2"><span>{completedCount} de {availableModules.length} clases</span><span>{progress}%</span></div>
               <div className="h-2.5 bg-white/10 rounded-full overflow-hidden"><div className="h-full bg-brand-green" style={{ width: `${progress}%` }} /></div>
               <div className="mt-5 flex items-center justify-between font-display font-bold text-sm uppercase text-brand-yellow">
-                <span>{completedCount > 0 ? 'Continuar aprendiendo' : 'Comenzar curso'}</span>
+                <span>{!globoflexiaAccess ? 'Solicita acceso al administrador' : completedCount > 0 ? 'Continuar aprendiendo' : 'Comenzar curso'}</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
-          </button>
+          </button>}
 
-          {additionalCourses.map((course) => {
+          {visibleCourses.map((course) => {
             const Icon = course.icon;
             const courseModuleIds = course.moduleIds || [];
             const courseCompletedCount = courseModuleIds.filter((id) => stats.completedLessons.includes(id)).length;
-            const courseCompleted = courseModuleIds.length > 0 && courseCompletedCount === courseModuleIds.length;
+            const courseCompleted = Boolean(course.plannedLessons && courseCompletedCount === course.plannedLessons);
             const courseStarted = courseCompletedCount > 0;
-            const CourseWrapper = course.available ? 'button' : 'article';
+            const accessible = course.available && hasCourseAccess(profile, course.id);
+            const CourseWrapper = accessible ? 'button' : 'article';
             return (
               <CourseWrapper
                 key={course.id}
-                {...(course.available ? { onClick: () => onOpenCourse(course.id), type: 'button' as const } : {})}
-                className={`w-full text-left bg-white border-3 border-brand-dark rounded-3xl p-5 sticker-shadow-sm ${course.available ? 'hover:-translate-y-0.5 transition-transform group' : 'opacity-70'}`}
+                {...(accessible ? { onClick: () => onOpenCourse(course.id), type: 'button' as const } : {})}
+                className={`w-full text-left bg-white border-3 border-brand-dark rounded-3xl p-5 sticker-shadow-sm ${accessible ? 'hover:-translate-y-0.5 transition-transform group' : 'opacity-70'}`}
               >
                 <div className="flex items-start gap-4">
                   <div className={`w-12 h-12 rounded-2xl ${course.background} flex items-center justify-center border border-brand-dark/10 flex-shrink-0`}>
@@ -128,14 +152,21 @@ export default function LearningHub({ profile, modules, stats, onOpenCourse, onL
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <h2 className="font-display text-lg font-black">{course.title}</h2>
-                      <span className={`px-2.5 py-1 border rounded-full text-[8px] font-bold uppercase tracking-wider ${course.available ? 'bg-brand-green/10 border-brand-green/30 text-brand-green' : 'bg-gray-100 border-gray-300 text-gray-500'}`}>
-                        {course.available ? (courseCompleted ? 'Completado' : 'Disponible') : 'Próximamente'}
+                      <span className={`px-2.5 py-1 border rounded-full text-[8px] font-bold uppercase tracking-wider ${accessible ? 'bg-brand-green/10 border-brand-green/30 text-brand-green' : 'bg-gray-100 border-gray-300 text-gray-500'}`}>
+                        {accessible ? (courseCompleted ? 'Completado' : 'Disponible') : course.available ? 'Sin acceso' : 'Próximamente'}
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 mt-2 leading-relaxed">{course.description}</p>
                   </div>
                 </div>
-                {course.available && (
+                {accessible && course.plannedLessons && (
+                  <div className="mt-4">
+                    <div className="flex justify-between text-[10px] font-bold mb-2"><span>{courseCompletedCount} de {course.plannedLessons} clases previstas</span><span>{Math.round(courseCompletedCount / course.plannedLessons * 100)}%</span></div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden"><div className="h-full bg-brand-green" style={{width: `${courseCompletedCount / course.plannedLessons * 100}%`}} /></div>
+                    {courseModuleIds.length < course.plannedLessons && <p className="text-[10px] text-gray-500 mt-2">{courseModuleIds.length} clases publicadas. Próximamente más contenido.</p>}
+                  </div>
+                )}
+                {accessible && (
                   <div className={`mt-4 flex items-center justify-between text-[10px] font-bold uppercase ${course.color}`}>
                     <span>{courseCompleted ? 'Curso completado' : courseStarted ? 'Continuar aprendiendo' : 'Comenzar curso'}</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
